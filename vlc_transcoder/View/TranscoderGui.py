@@ -1,0 +1,250 @@
+#! python3
+#-*-coding: utf-8 -*-
+
+"""
+@file TranscoderGui.py
+The Graphical User InterfaCe of the transcoder
+"""
+
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+from PyQt5 import QtCore
+
+from NzPyQtToolbox import NzQWidgets
+
+class View(QtWidgets.QWidget):
+    """
+    This is the View part of the MVC implementation. It will describe the GUI
+    of the application
+    """
+    def __init__(self,  app=None):
+        super(View, self).__init__()
+        self.app = app
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("VLC Transcoder")
+        tabWidget = self.initTabs()
+        mainLayout = QtWidgets.QVBoxLayout()
+        mainLayout.addWidget(tabWidget)
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
+        self.setLayout(mainLayout)
+        self.show()
+
+    def initTabs(self):
+        tabWidget = QtWidgets.QTabWidget()
+        conftab = ConfigurationTab(self)
+        filefindertab = QtWidgets.QWidget()
+
+        tabWidget.addTab(conftab, "Configuration")
+        tabWidget.addTab(filefindertab, "Input files")
+
+        return tabWidget
+
+
+class ConfigurationTab(QtWidgets.QWidget):
+    """
+    This tab holds the settings for the transcoding
+    """
+    def __init__(self, fileInfo, parent=None):
+        super(ConfigurationTab, self).__init__(parent)
+
+        grid = QtWidgets.QGridLayout()
+        cRow=0
+        # Encapsulation
+        encapsLabel = QtWidgets.QLabel("Encapsulation:")
+        encapsCombo = QtWidgets.QComboBox(self)
+        grid.addWidget(encapsLabel, cRow, 0)
+        grid.addWidget(encapsCombo, cRow, 1)
+
+        # Change current row
+        cRow += 1
+
+        # Add video configuration widgets
+        cRow = self.createVideoWidgets(grid, cRow)
+
+        # Change current row
+        cRow += 1
+
+        # Add audio configuration widgets
+        cRow = self.createAudioWidgets(grid, cRow)
+
+        # Change current row
+        cRow += 1
+
+        # Add general configuration widgets
+        cRow = self.createGeneralAspectWidgets(grid, cRow)
+
+        # Change current row
+        cRow += 1
+
+        # Deinterlace
+        deinterlaceCheckB = QtWidgets.QCheckBox("Deinterlace")
+        grid.addWidget(deinterlaceCheckB, cRow, 0)
+
+        # set Layout
+        self.setLayout(grid)
+
+    def createVideoWidgets(self, grid, cRow):
+        """
+        Adds widgets for audio configuration
+
+        @param grid QGridLayout: The current grid layout widget
+        @param cRow int: The current line number in the grid
+
+        @return cRow int: The final row index after the widgets were created
+        """
+        # Video Codec
+        vCodecLabel = QtWidgets.QLabel("Video Codec:")
+        vCodecCombo = QtWidgets.QComboBox(self)
+
+        grid.addWidget(vCodecLabel, cRow, 0)
+        grid.addWidget(vCodecCombo, cRow, 1)
+
+        # Bit rate
+        vBitRateLabel = QtWidgets.QLabel("Bit rate:")
+        autoBitRateDisCkBox = NzQWidgets.NzQDisablingCheckBox('Auto', self)
+        vBitRateSpin = QtWidgets.QSpinBox(self)
+        autoBitRateDisCkBox.addSlaveWidget(vBitRateSpin,
+                                           isEnabledWhenMasterIsEnabled=False)
+
+
+        grid.addWidget(vBitRateLabel, cRow, 3)
+        grid.addWidget(autoBitRateDisCkBox, cRow, 4)
+        grid.addWidget(vBitRateSpin, cRow, 5)
+
+        return cRow
+
+    def createAudioWidgets(self, grid, cRow):
+        """
+        Adds widgets for video configuration
+
+        @param grid QGridLayout: The current grid layout widget
+        @param cRow int: The current line number in the grid
+
+        @return cRow int: The final row index after the widgets were created
+        """
+
+        # Audio Codec
+        aCodecLabel = QtWidgets.QLabel("Audio Codec:")
+        aCodecCombo = QtWidgets.QComboBox(self)
+
+        grid.addWidget(aCodecLabel, cRow, 0)
+        grid.addWidget(aCodecCombo, cRow, 1)
+
+
+        # Audio bitrate
+        aBitRateLabel = QtWidgets.QLabel("Audio bit rate:")
+        aBitRateCombo = QtWidgets.QComboBox(self)
+
+        grid.addWidget(aBitRateLabel, cRow, 2)
+        grid.addWidget(aBitRateCombo, cRow, 3)
+
+        # Channels
+        aChannelsLabel = QtWidgets.QLabel("Channels:")
+        aChannelsSpin = QtWidgets.QSpinBox(self)
+
+        grid.addWidget(aChannelsLabel, cRow, 4)
+        grid.addWidget(aChannelsSpin, cRow, 5)
+
+        # Sample rate
+        aSampleRateLabel = QtWidgets.QLabel("Sample rate")
+        aSampleRateCombo = QtWidgets.QComboBox(self)
+
+        grid.addWidget(aSampleRateLabel, cRow, 6)
+        grid.addWidget(aSampleRateCombo, cRow, 7)
+
+        return cRow
+
+    def createGeneralAspectWidgets(self, grid, cRow):
+        """
+        Adds widgets for general aspect configuration
+
+        @param grid QGridLayout: The current grid layout widget
+        @param cRow int: The current line number in the grid
+
+        @return cRow int: The final row index after the widgets were created
+        """
+        resizeDisCheckB = NzQWidgets.NzQDisablingCheckBox("Resize", self)
+        grid.addWidget(resizeDisCheckB, cRow, 0)
+
+        # Resize by Height
+        byHeightDisRadio = NzQWidgets.NzQDisablingRadioButton("Height", self,
+                                                              isInMutexGroup=True)
+        byHeightCombo = QtWidgets.QComboBox(self)
+        byHeightDisRadio.setChecked(True)
+
+        customHeightDisCheckB = NzQWidgets.NzQDisablingCheckBox("Custom", self)
+        customHeightLineEd = QtWidgets.QLineEdit(self)
+        customHeightDisCheckB.addSlaveWidget(customHeightLineEd)
+        customHeightDisCheckB.addSlaveWidget(byHeightCombo, False)
+
+        grid.addWidget(byHeightDisRadio, cRow, 1)
+        grid.addWidget(byHeightCombo, cRow, 2)
+        grid.addWidget(customHeightDisCheckB, cRow, 3)
+        grid.addWidget(customHeightLineEd, cRow, 4)
+
+        cRow += 1
+        # Resize by Width
+        byWidthDisRadio = NzQWidgets.NzQDisablingRadioButton("Width", self,
+                                                             isInMutexGroup=True)
+        byWidthCombo = QtWidgets.QComboBox(self)
+
+        customWidthDisCheckB = NzQWidgets.NzQDisablingCheckBox("Custom", self)
+        customWidthLineEd = QtWidgets.QLineEdit(self)
+        customWidthDisCheckB.addSlaveWidget(customWidthLineEd)
+        customWidthDisCheckB.addSlaveWidget(byWidthCombo, False)
+
+        grid.addWidget(byWidthDisRadio, cRow, 1)
+        grid.addWidget(byWidthCombo, cRow, 2)
+        grid.addWidget(customWidthDisCheckB, cRow, 3)
+        grid.addWidget(customWidthLineEd, cRow, 4)
+
+        cRow += 1
+        # Resize by Percent
+        byPercentDisRadio = NzQWidgets.NzQDisablingRadioButton("Percent", self,
+                                                               isInMutexGroup=True)
+        byPercentSpin = QtWidgets.QSpinBox(self)
+        byPercentSpin.setSuffix("%")
+        byPercentSpin.setRange(0, 100)
+
+        grid.addWidget(byPercentDisRadio, cRow, 1)
+        grid.addWidget(byPercentSpin, cRow, 2)
+
+        # QButtonGroup for mutually exclusive resize options
+        resizeGroup = QtWidgets.QButtonGroup(self)
+        resizeGroup.addButton(byHeightDisRadio)
+        resizeGroup.addButton(byWidthDisRadio)
+        resizeGroup.addButton(byPercentDisRadio)
+
+        # Create disable links for "resize by height" radio button
+        for wdg in (byWidthCombo, customWidthDisCheckB, customWidthLineEd,
+                    byPercentSpin):
+            byHeightDisRadio.addSlaveWidget(wdg, False)
+        for wdg in (byHeightCombo, customHeightDisCheckB, customHeightLineEd):
+            byHeightDisRadio.addSlaveWidget(wdg)
+
+        # Create disable links for "resize by width" radio button
+        for wdg in (byHeightCombo, customHeightDisCheckB, customHeightLineEd,
+                    byPercentSpin):
+            byWidthDisRadio.addSlaveWidget(wdg, False)
+        for wdg in (byWidthCombo, customWidthDisCheckB, customWidthLineEd):
+            byWidthDisRadio.addSlaveWidget(wdg)
+
+        # Create disable links for "resize by percent" radio button
+        for wdg in (byHeightCombo, customHeightDisCheckB, customHeightLineEd,
+                    byWidthCombo, customWidthDisCheckB, customWidthLineEd):
+            byPercentDisRadio.addSlaveWidget(wdg, False)
+        byPercentDisRadio.addSlaveWidget(byPercentSpin)
+
+        # Add slave widget to be disabled by resizeDisCheckB
+        for wdg in (byHeightDisRadio, byHeightCombo, customHeightDisCheckB,
+                    customHeightLineEd, byWidthDisRadio, byWidthCombo,
+                    customWidthDisCheckB, customWidthLineEd, byPercentDisRadio,
+                    byPercentSpin):
+            resizeDisCheckB.addSlaveWidget(wdg)
+
+        resizeGroup.setExclusive(True)
+
+        return cRow
+
