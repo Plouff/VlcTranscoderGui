@@ -6,5 +6,5 @@
 Contains custom Widgets
 """
 
-from NzPyQtToolbox.NzQDisablingCheckBox import *
+from NzPyQtToolbox.NzQDisablingWidgets import *
 
