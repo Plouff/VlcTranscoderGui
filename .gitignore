@@ -5,3 +5,8 @@ __pycache__/
 # C extensions
 *.so
 
+# Rope folders
+.ropeproject/
+
+# Other
+General_snippets/

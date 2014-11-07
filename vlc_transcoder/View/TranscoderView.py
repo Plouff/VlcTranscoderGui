@@ -2,8 +2,8 @@
 #-*-coding: utf-8 -*-
 
 """
-@file TranscoderGui.py
-The Graphical User InterfaCe of the transcoder
+@file TranscoderView.py
+The View of the transcoder GUI
 """
 
 from PyQt5 import QtGui
@@ -11,19 +11,20 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 from View.ConfigurationTab import *
+from View.InputFilesTab import *
 
 class View(QtWidgets.QWidget):
     """
     This is the View part of the MVC implementation. It will describe the GUI
     of the application
     """
-    def __init__(self,  app=None):
+    def __init__(self,  app):
         """
         The constructor of the View
 
         @param app QtWidgets.QApplication: the root QApplication
         """
-        super(View, self).__init__()
+        super().__init__()
         self.app = app
         self.tabs = self.initUI()
 
@@ -45,11 +46,13 @@ class View(QtWidgets.QWidget):
         """
         tabWidget = QtWidgets.QTabWidget()
         conftab = ConfigurationTab(self)
-        filefindertab = QtWidgets.QWidget()
+        inputtab = InputFilesTab(self)
 
         tabWidget.addTab(conftab, "Configuration")
-        tabWidget.addTab(filefindertab, "Input files")
+        tabWidget.addTab(inputtab, "Input files")
 
         return tabWidget
 
 
+    def getController(self):
+        return self.controller

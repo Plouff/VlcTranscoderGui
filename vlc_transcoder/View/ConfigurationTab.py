@@ -23,15 +23,16 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         @param parent QtWidgets.QWidget: The parent widget
         """
-        super(ConfigurationTab, self).__init__(parent)
+        super().__init__(parent)
+        self.parent=parent
 
         grid = QtWidgets.QGridLayout()
         cRow=0
         # Encapsulation
         encapsLabel = QtWidgets.QLabel("Encapsulation:")
-        encapsCombo = QtWidgets.QComboBox(self)
+        parent.encapsCombo = QtWidgets.QComboBox(self)
         grid.addWidget(encapsLabel, cRow, 0)
-        grid.addWidget(encapsCombo, cRow, 1)
+        grid.addWidget(parent.encapsCombo, cRow, 1)
 
         # Change current row
         cRow += 1
@@ -72,10 +73,10 @@ class ConfigurationTab(QtWidgets.QWidget):
         """
         # Video Codec
         vCodecLabel = QtWidgets.QLabel("Video Codec:")
-        vCodecCombo = QtWidgets.QComboBox(self)
+        self.parent.vCodecCombo = QtWidgets.QComboBox(self)
 
         grid.addWidget(vCodecLabel, cRow, 0)
-        grid.addWidget(vCodecCombo, cRow, 1)
+        grid.addWidget(self.parent.vCodecCombo, cRow, 1)
 
         # Bit rate
         vBitRateLabel = QtWidgets.QLabel("Bit rate:")
@@ -106,18 +107,18 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         # Audio Codec
         aCodecLabel = QtWidgets.QLabel("Audio Codec:")
-        aCodecCombo = QtWidgets.QComboBox(self)
+        self.parent.aCodecCombo = QtWidgets.QComboBox(self)
 
         grid.addWidget(aCodecLabel, cRow, 0)
-        grid.addWidget(aCodecCombo, cRow, 1)
+        grid.addWidget(self.parent.aCodecCombo, cRow, 1)
 
 
         # Audio bitrate
         aBitRateLabel = QtWidgets.QLabel("Audio bit rate:")
-        aBitRateCombo = QtWidgets.QComboBox(self)
+        self.parent.aBitRateCombo = QtWidgets.QComboBox(self)
 
         grid.addWidget(aBitRateLabel, cRow, 2)
-        grid.addWidget(aBitRateCombo, cRow, 3)
+        grid.addWidget(self.parent.aBitRateCombo, cRow, 3)
 
         # Channels
         aChannelsLabel = QtWidgets.QLabel("Channels:")
@@ -128,10 +129,10 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         # Sample rate
         aSampleRateLabel = QtWidgets.QLabel("Sample rate")
-        aSampleRateCombo = QtWidgets.QComboBox(self)
+        self.parent.aSampleRateCombo = QtWidgets.QComboBox(self)
 
         grid.addWidget(aSampleRateLabel, cRow, 6)
-        grid.addWidget(aSampleRateCombo, cRow, 7)
+        grid.addWidget(self.parent.aSampleRateCombo, cRow, 7)
 
         return cRow
 

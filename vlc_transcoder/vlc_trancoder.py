@@ -12,15 +12,9 @@ created: 20/10/14
 
 from PyQt5 import QtWidgets
 
-from View.TranscoderGui import *
+from View.TranscoderView import *
 from Model.TranscoderModel import *
-
-
-class Controller():
-    def __init__(self):
-        return
-
-
+from Controller.TranscoderController import *
 
 
 """
@@ -30,7 +24,9 @@ if __name__ == '__main__':
     import sys
 
     app = QtWidgets.QApplication(sys.argv)
-    transcoder_gui = View(app)
+    view = View(app)
+    model = Model()
+    controller = Controller(model, view)
     sys.exit(app.exec_())
 
 
