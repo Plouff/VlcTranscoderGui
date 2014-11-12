@@ -123,6 +123,7 @@ class ConfigurationTab(QtWidgets.QWidget):
         # Channels
         aChannelsLabel = QtWidgets.QLabel("Channels:")
         aChannelsSpin = QtWidgets.QSpinBox(self)
+        aChannelsSpin.setValue(2)
 
         grid.addWidget(aChannelsLabel, cRow, 4)
         grid.addWidget(aChannelsSpin, cRow, 5)
@@ -149,21 +150,31 @@ class ConfigurationTab(QtWidgets.QWidget):
                                                           parent=self)
         grid.addWidget(resizeDisCheckB, cRow, 0)
 
+        # Resize by standard resolution
+        byStdResolDisRadio = NzQWidgets.NzQDisablingRadioButton(text="Std Resolution",
+                                                                parent=self,
+                                                                isInMutexGroup=True)
+        self.parent.byStdResolCombo = QtWidgets.QComboBox(self)
+        byStdResolDisRadio.setChecked(True)
+
+        grid.addWidget(byStdResolDisRadio, cRow, 1)
+        grid.addWidget(self.parent.byStdResolCombo, cRow, 2)
+
+        cRow += 1
         # Resize by Height
         byHeightDisRadio = NzQWidgets.NzQDisablingRadioButton(text="Height",
                                                               parent=self,
                                                               isInMutexGroup=True)
-        byHeightCombo = QtWidgets.QComboBox(self)
-        byHeightDisRadio.setChecked(True)
+        self.parent.byHeightCombo = QtWidgets.QComboBox(self)
 
         customHeightDisCheckB = NzQWidgets.NzQDisablingCheckBox(text="Custom",
                                                                 parent=self)
         customHeightLineEd = QtWidgets.QLineEdit(self)
         customHeightDisCheckB.addSlaveWidget(customHeightLineEd)
-        customHeightDisCheckB.addSlaveWidget(byHeightCombo, False)
+        customHeightDisCheckB.addSlaveWidget(self.parent.byHeightCombo, False)
 
         grid.addWidget(byHeightDisRadio, cRow, 1)
-        grid.addWidget(byHeightCombo, cRow, 2)
+        grid.addWidget(self.parent.byHeightCombo, cRow, 2)
         grid.addWidget(customHeightDisCheckB, cRow, 3)
         grid.addWidget(customHeightLineEd, cRow, 4)
 
@@ -172,16 +183,16 @@ class ConfigurationTab(QtWidgets.QWidget):
         byWidthDisRadio = NzQWidgets.NzQDisablingRadioButton(text="Width",
                                                              parent=self,
                                                              isInMutexGroup=True)
-        byWidthCombo = QtWidgets.QComboBox(self)
+        self.parent.byWidthCombo = QtWidgets.QComboBox(self)
 
         customWidthDisCheckB = NzQWidgets.NzQDisablingCheckBox(text="Custom",
                                                                parent=self)
         customWidthLineEd = QtWidgets.QLineEdit(self)
         customWidthDisCheckB.addSlaveWidget(customWidthLineEd)
-        customWidthDisCheckB.addSlaveWidget(byWidthCombo, False)
+        customWidthDisCheckB.addSlaveWidget(self.parent.byWidthCombo, False)
 
         grid.addWidget(byWidthDisRadio, cRow, 1)
-        grid.addWidget(byWidthCombo, cRow, 2)
+        grid.addWidget(self.parent.byWidthCombo, cRow, 2)
         grid.addWidget(customWidthDisCheckB, cRow, 3)
         grid.addWidget(customWidthLineEd, cRow, 4)
 
@@ -194,41 +205,52 @@ class ConfigurationTab(QtWidgets.QWidget):
         byPercentSpin = QtWidgets.QSpinBox(self)
         byPercentSpin.setSuffix("%")
         byPercentSpin.setRange(0, 100)
+        byPercentSpin.setValue(50)
 
         grid.addWidget(byPercentDisRadio, cRow, 1)
         grid.addWidget(byPercentSpin, cRow, 2)
 
         # QButtonGroup for mutually exclusive resize options
         resizeGroup = QtWidgets.QButtonGroup(self)
+        resizeGroup.addButton(byStdResolDisRadio)
         resizeGroup.addButton(byHeightDisRadio)
         resizeGroup.addButton(byWidthDisRadio)
         resizeGroup.addButton(byPercentDisRadio)
 
-        # Create disable links for "resize by height" radio button
-        for wdg in (byWidthCombo, customWidthDisCheckB, customWidthLineEd,
+        # Create disable links for "resize by standard resolution" radio button
+        for wdg in (self.parent.byHeightCombo, customHeightDisCheckB, customHeightLineEd,
+                    self.parent.byWidthCombo, customWidthDisCheckB, customWidthLineEd,
                     byPercentSpin):
+            byStdResolDisRadio.addSlaveWidget(wdg, False)
+
+        byStdResolDisRadio.addSlaveWidget(self.parent.byStdResolCombo)
+
+        # Create disable links for "resize by height" radio button
+        for wdg in (self.parent.byWidthCombo, customWidthDisCheckB, customWidthLineEd,
+                    byPercentSpin, self.parent.byStdResolCombo):
             byHeightDisRadio.addSlaveWidget(wdg, False)
-        for wdg in (byHeightCombo, customHeightDisCheckB, customHeightLineEd):
+        for wdg in (self.parent.byHeightCombo, customHeightDisCheckB, customHeightLineEd):
             byHeightDisRadio.addSlaveWidget(wdg)
 
         # Create disable links for "resize by width" radio button
-        for wdg in (byHeightCombo, customHeightDisCheckB, customHeightLineEd,
-                    byPercentSpin):
+        for wdg in (self.parent.byHeightCombo, customHeightDisCheckB, customHeightLineEd,
+                    byPercentSpin, self.parent.byStdResolCombo):
             byWidthDisRadio.addSlaveWidget(wdg, False)
-        for wdg in (byWidthCombo, customWidthDisCheckB, customWidthLineEd):
+        for wdg in (self.parent.byWidthCombo, customWidthDisCheckB, customWidthLineEd):
             byWidthDisRadio.addSlaveWidget(wdg)
 
         # Create disable links for "resize by percent" radio button
-        for wdg in (byHeightCombo, customHeightDisCheckB, customHeightLineEd,
-                    byWidthCombo, customWidthDisCheckB, customWidthLineEd):
+        for wdg in (self.parent.byHeightCombo, customHeightDisCheckB, customHeightLineEd,
+                    self.parent.byWidthCombo, customWidthDisCheckB, customWidthLineEd,
+                    self.parent.byStdResolCombo):
             byPercentDisRadio.addSlaveWidget(wdg, False)
         byPercentDisRadio.addSlaveWidget(byPercentSpin)
 
         # Add slave widget to be disabled by resizeDisCheckB
-        for wdg in (byHeightDisRadio, byHeightCombo, customHeightDisCheckB,
-                    customHeightLineEd, byWidthDisRadio, byWidthCombo,
+        for wdg in (byHeightDisRadio, self.parent.byHeightCombo, customHeightDisCheckB,
+                    customHeightLineEd, byWidthDisRadio, self.parent.byWidthCombo,
                     customWidthDisCheckB, customWidthLineEd, byPercentDisRadio,
-                    byPercentSpin):
+                    byPercentSpin, byStdResolDisRadio, self.parent.byStdResolCombo):
             resizeDisCheckB.addSlaveWidget(wdg)
 
         resizeGroup.setExclusive(True)

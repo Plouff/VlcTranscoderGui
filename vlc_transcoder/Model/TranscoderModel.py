@@ -66,6 +66,7 @@ class Model():
         The class constructor
         """
         self.defineAudioVideoParameters()
+        self.defineResizeParameters()
         self.rootDirList=[]
 
     def defineAudioVideoParameters(self):
@@ -92,6 +93,7 @@ class Model():
 
         self.vCodecODic=OrderedDict([
             ('h264', 'H264'),
+            ('H263', 'H263'),
             ('mp1v', 'MPEG-1 Video - recommended for portability'),
             ('mp2v', 'MPEG-2 Video - used in DVDs'),
             ('mp4v', 'MPEG-4 Video'),
@@ -103,7 +105,6 @@ class Model():
             ('WMV3', 'Windows Media Video v3, also called Windows Media 9 (unsupported)'),
             ('DVSD', 'Digital Video'),
             ('MJPG', 'MJPEG'),
-            ('H263', 'H263'),
             ('theo', 'Theora'),
             ('IV20', 'Indeo Video'),
             #('IV40', 'Indeo Video version 4 or later (unsupported)'),
@@ -122,12 +123,12 @@ class Model():
          ])
 
         self.aCodecODic=OrderedDict([
-            ('mpga', 'MPEG audio (recommended for portability)'),
             ('mp3' , 'MPEG Layer 3 audio'),
+            ('mpga', 'MPEG audio (recommended for portability)'),
             ('mp4a', 'MP4 audio'),
             ('a52' , 'Dolby Digital (A52 or AC3)'),
             ('vorb', 'Vorbis'),
-            ('spx' , 'Speex'),
+            ('spx', 'Speex'),
             ('flac', 'FLAC (loss less)')
         ])
 
@@ -135,6 +136,21 @@ class Model():
 
         self.aSampleRateList=['44056Hz', '44100Hz', '48000Hz']
 
+    def defineResizeParameters(self):
+        """
+        Defines classical resize parameters
+        """
+        self.stdResolutionOdic=OrderedDict([
+            ('640x480', 'VGA'),
+            ('800x600', 'SVGA'),
+            ('1280x720', 'HD 720'),
+            ('1920x1080', 'HD 1080'),
+            ('2048x1080', '2K'),
+            ('4096x2160', '4K')
+        ])
+
+        self.vHeightList=['480', '600', '720', '1080', '2048', '4096']
+        self.vWidthList=['640', '800', '1280', '1920', '2160']
 
     def addRootDirectory(self, rootDir):
         """

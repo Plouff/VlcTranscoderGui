@@ -62,3 +62,18 @@ class Controller():
         # Sample rate
         self.aSampleRateModel = QtCore.QStringListModel(self.model.aSampleRateList)
         self.view.aSampleRateCombo.setModel(self.aSampleRateModel)
+
+        # Standard Resolution
+        self.stdResolModel = TranscoderModel.TooltipedDataListModel(
+            self.model.stdResolutionOdic)
+        self.view.byStdResolCombo.setModel(self.stdResolModel)
+
+        # Resize by height
+        self.heightModel = QtCore.QStringListModel(self.model.vHeightList)
+        self.view.byHeightCombo.setModel(self.heightModel)
+
+        # Resize by width
+        self.widthModel = QtCore.QStringListModel(self.model.vWidthList)
+        self.view.byWidthCombo.setModel(self.widthModel)
+
+
