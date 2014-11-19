@@ -32,6 +32,5 @@ if __name__ == '__main__':
 
 # vlc -vvv input_stream --sout #transcode{vcodec=mp4v,acodec=mpga,vb=800,ab=128,deinterlace}:
 # CALL "C:\Program Files\VideoLAN\VLC\vlc" -I dummy -vvv %1
-#--sout=#transcode{acodec="mpga",ab="512","channels=2",samplerate="44100"}:standard{access="file",mux="mpeg1",dst="%_commanm%.mp3"}
+#--sout=#transcode{acodec="mpga",ab="512",channels="2",samplerate="44100"}:standard{access="file",mux="mpeg1",dst="%_commanm%.mp3"}
 #vlc://quit
-
