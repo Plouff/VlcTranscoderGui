@@ -26,17 +26,25 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
 
         # Create and set the model to the table
         emptyList = [["" for i in range(len(headers))]]
-        self._model = DirectoryManagerTableModel(emptyList, headers)
+        emptyList = [["" for i in range(len(headers))] for i in range(10)]
+        self._model = DirectoryManagerTableModel(emptyList, headers,
+                                                 self._tableView)
         self._tableView.setModel(self._model)
 
         # Create and set delegate to the table
-        _delegate = DirectoryManagerTableDelegate(self._model, self._tableView)
+        _delegate = DirectoryManagerTableDelegate(masterWidget=self)
         self._tableView.setItemDelegate(_delegate)
 
         for row in range(0, self._model.rowCount(self)):
             self._tableView.openPersistentEditor(self._model.index(row, 0))
 
         _layout.addWidget(self._tableView)
+
+    def getModel(self):
+        return self._model
+
+    def getTableView(self):
+        return self._tableView
 
 
 class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
@@ -48,16 +56,26 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
 
     @todo Add a running bar instead of the icon
     """
-    def __init__(self, model, parent=None):
+    def __init__(self, masterWidget):
         """
         Class constructor
 
-        @param[in] model The model of the view
-        @param[in] parent The owner of this delegate
+        @param[in] masterWidget The master widget containing this table
+        delegate
         """
-        super(DirectoryManagerTableDelegate, self).__init__(parent)
-        self.model = model
-        self.parent = parent
+        # Set some pointers
+        self.masterWidget = masterWidget
+        self.model = masterWidget.getModel()
+        self.parentTable = masterWidget.getTableView()
+
+        # Call parent constructor
+        super(DirectoryManagerTableDelegate, self).__init__(self.parentTable)
+
+        # Create a signal mapper for "+/-" buttons
+        self.mapper = QtCore.QSignalMapper(self.parentTable)
+
+        # Connect our mapper to a dedicated method
+        self.mapper.mapped[int].connect(self.model.addNewDirectory)
 
     '''
     def paint(self, painter, option, index):
@@ -97,12 +115,15 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
             QtWidgets.QStyledItemDelegate.paint(self, painter, option, index)
     '''
 
-    def createEditor(self, parent, option, index):
+    def createEditor(self, parentTable, option, index):
         column = index.column()
         row = index.row()
+        #print("createEditor: Row {} - Column {}".format(row, column))
         if column == 0:
-            centeredBut = QtWidgets.QWidget(parent)
-            if row == (self.model.rowCount(self.parent) - 1):
+            # Create a container widget
+            centeredBut = QtWidgets.QWidget(parentTable)
+            #print("createEditor - parentTable {}".format(parentTable))
+            if index.model().isLastRow(row):
                 # If this is the last row, create a "+" push button as
                 # our editor
                 button = QtWidgets.QPushButton("+", centeredBut)
@@ -110,25 +131,32 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
                 # Else, create a "-" push button as our editor
                 button = QtWidgets.QPushButton("-", centeredBut)
 
+            # Define maximum size of the button
             button.setMaximumSize(25, 25)
-            # Create layout to center the widget
+
+            # Connect the button clicked signal to our mapper
+            button.clicked.connect(self.mapper.map)
+
+            # We use the mapper to send the row index of the button
+            self.mapper.setMapping(button, row)
+            self.mapper.setMapping(button, str(button))
+
+            # Create a layout to center the button
             hbox = QtWidgets.QHBoxLayout()
             hbox.addWidget(button)
             hbox.setAlignment(button, QtCore.Qt.AlignCenter)
             hbox.setContentsMargins(0, 0, 0, 0)
-            #vbox = QtWidgets.QVBoxLayout()
-            #vbox.addLayout(hbox)
-
             centeredBut.setLayout(hbox)
             return centeredBut
 
         #elif column == 2:
             ## create the ProgressBar as our editor.
-            #editor = QtGui.QProgressBar(parent)
+            #editor = QtGui.QProgressBar(parentTable)
             #return editor
 
         else:
-            return QtWidgets.QStyledItemDelegate.createEditor(self, parent,
+            return QtWidgets.QStyledItemDelegate.createEditor(self,
+                                                              parentTable,
                                                               option, index)
 
     #def sizeHint(self, option, index):
@@ -152,14 +180,15 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, directoryStatus=[[]], headers=[], parent=None):
         super().__init__(parent)
-        self.__directoryStatus = directoryStatus
-        self.__headers = headers
+        self._directoryStatus = directoryStatus
+        self._headers = headers
+        self.parent = parent
 
-    def rowCount(self, parent):
-        return len(self.__directoryStatus)
+    def rowCount(self, parent=None):
+        return len(self._directoryStatus)
 
     def columnCount(self, parent):
-        return len(self.__directoryStatus[0])
+        return len(self._directoryStatus[0])
 
     def flags(self, index):
         if (index.column() == 0):
@@ -171,8 +200,8 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
     def headerData(self, section, orientation, role):
         if role == QtCore.Qt.DisplayRole:
             if orientation == QtCore.Qt.Horizontal:
-                if section < len(self.__headers):
-                    return self.__headers[section]
+                if section < len(self._headers):
+                    return self._headers[section]
                 else:
                     return "Hearder list too short"
             else:
@@ -194,7 +223,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             row = index.row()
             column = index.column()
-            value = self.__directoryStatus[row][column]
+            value = self._directoryStatus[row][column]
             return value
 
     def setData(self, index, value, role=QtCore.Qt.EditRole):
@@ -205,7 +234,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.EditRole:
             row = index.row()
             column = index.column()
-            print("setData: Row {} - Column {}".format(row, column))
+            #print("setData: Row {} - Column {}".format(row, column))
 
             #color = QtGui.QColor(value)
 
@@ -214,6 +243,24 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
                 #self.dataChanged.emit(index, index)
                 #return True
         return True
+
+    def isLastRow(self, row):
+        if row == (self.rowCount() - 1):
+            return True
+        else:
+            return False
+
+    def addNewDirectory(self, row):
+        #print("addNewDirectory - row #{}".format(row))
+        if self.isLastRow(row):
+            print("Add dir")
+            rootdir = QtWidgets.QFileDialog.getExistingDirectory(self.parent,
+                'Root directory', '/', QtWidgets.QFileDialog.ShowDirsOnly |
+                QtWidgets.QFileDialog.DontResolveSymlinks)
+            print(rootdir)
+        else:
+            print("Remove dir")
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
