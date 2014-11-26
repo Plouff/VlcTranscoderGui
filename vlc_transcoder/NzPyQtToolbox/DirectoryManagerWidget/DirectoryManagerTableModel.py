@@ -14,6 +14,7 @@ from pprint import pprint
 
 from DebugTrace import qtDebugTrace
 
+
 class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
 
     # Create a signal mapper for "-" buttons
@@ -27,7 +28,6 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
 
     def setDelegate(self, delegate):
         self._delegate = delegate
-
 
     def getMinusButClickedMapper(self):
         return self._minusButClicked
@@ -100,9 +100,10 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         else:
             return False
 
-    def addRemoveDirectory(self, row):
-        print("addRemoveDirectory - row #{} - rowCount {}".format(row,
-                                                                  self.rowCount()))
+    def addRemoveDirectory(self, button):
+        row = self._delegate.getIndexOfButton(button)
+        print("addRemoveDirectory - row #{} - rowCount {}".format(
+            row, self.rowCount()))
         if self.isLastRow(row):
             print("Add dir: row {}".format(row))
             self.addDirectory(row)
@@ -113,10 +114,10 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             print("rowCount {}".format(self.rowCount()))
 
     def addDirectory(self, row):
-        #rootDir = QtWidgets.QFileDialog.getExistingDirectory(self.parentTable,
-            #'Root directory', '/', QtWidgets.QFileDialog.ShowDirsOnly |
-            #QtWidgets.QFileDialog.DontResolveSymlinks)
-        rootDir = "test"
+        rootDir = QtWidgets.QFileDialog.getExistingDirectory(self.parentTable,
+            'Root directory', '/', QtWidgets.QFileDialog.ShowDirsOnly |
+            QtWidgets.QFileDialog.DontResolveSymlinks)
+        #rootDir = "test"
         print(rootDir)
         if rootDir:
             self._directoryData[row][2] = rootDir
@@ -154,5 +155,3 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
     def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
         raise NotImplementedError(
             "Not implemented since the widget only needs removeRow()")
-
-

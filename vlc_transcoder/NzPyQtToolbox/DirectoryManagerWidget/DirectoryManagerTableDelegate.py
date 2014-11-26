@@ -40,7 +40,7 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
 
         # Create a signal mapper for "+/-" buttons
         self._butClickedMapper = QtCore.QSignalMapper(self.parentTable)
-        self._butClickedMapper.mapped[int].connect(
+        self._butClickedMapper.mapped[QtWidgets.QWidget].connect(
             self.model.addRemoveDirectory)
 
         # A signal to remove buttons for the list of buttons
@@ -51,6 +51,9 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
 
     def getButtonClickedMapper(self):
         return self._butClickedMapper
+
+    def getIndexOfButton(self, button):
+        return self._plusMinusButList.index(button)
 
     def removeButton(self, position):
         #print("removeButton: position {}".format(position))
@@ -75,14 +78,14 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
                 else:
                     self._plusMinusButList[row].setText("-")
             except IndexError as e:
-                print("paint: Row {} - Column {} - RowCount {}".format(row, column,
-                                                                       index.model().rowCount()))
+                print("paint: Row {} - Column {} - RowCount {}".format(
+                    row, column, index.model().rowCount()))
                 print(e)
                 raise
                 sys.exit()
             except RuntimeError as e:
-                print("paint: Row {} - Column {} - RowCount {}".format(row, column,
-                                                                       index.model().rowCount()))
+                print("paint: Row {} - Column {} - RowCount {}".format(
+                    row, column, index.model().rowCount()))
                 print(e)
                 raise
                 sys.exit()
@@ -109,10 +112,9 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
             self._plusMinusButList[row].clicked.connect(
                 self._butClickedMapper.map)
 
-            # We use the mapper to send the row index of the _plusMinusButList
-            self._butClickedMapper.setMapping(self._plusMinusButList[row], row)
+            # We use the mapper to send the button that triggered the signal
             self._butClickedMapper.setMapping(self._plusMinusButList[row],
-                                              str(self._plusMinusButList[row]))
+                                              self._plusMinusButList[row])
 
             # Create a layout to center the _plusMinusButList
             hbox = QtWidgets.QHBoxLayout()
@@ -148,6 +150,3 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         initialize it with data from the model
         """
         pass
-
-
-
