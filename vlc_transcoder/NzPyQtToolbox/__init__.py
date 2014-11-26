@@ -10,4 +10,4 @@ Contains the Graphical User Interface of the transcoder
 Contains the Graphical User Interface of the transcoder
 """
 # List of modules
-__all__ = ['NzQWidgets.py', 'NzQDisablingCheckBox.py']
+__all__ = ['NzQWidgets.py', 'NzQDisablingCheckBox.py', 'DebugTrace.py']
