@@ -6,37 +6,40 @@
 The Model for the transcoder
 """
 
+# Import PyQt
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
-import sys
-from pprint import pprint
 
+# Import custom PyQt modules
 from DebugTrace import qtDebugTrace
+
+# Import standard modules
+import sys
+import logging
+import warnings
+from pprint import pprint, pformat
 
 
 class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
 
-    # Create a signal mapper for "-" buttons
-    _minusButClicked = QtCore.pyqtSignal(int)
-
-    def __init__(self, directoryData=[[]], headers=[], parentTable=None):
+    def __init__(self, headers=[], parentTable=None):
         super().__init__(parentTable)
-        self._directoryData = directoryData
-        self._headers = headers
+        self._headers = ['Ctrl', 'Directory'] + headers
+        self._directoryData = [[]]
+        emptyRow = self.getEmptyRow()
+        self._directoryData[0] = emptyRow
+        logging.debug(self._headers)
         self.parentTable = parentTable
 
     def setDelegate(self, delegate):
         self._delegate = delegate
 
-    def getMinusButClickedMapper(self):
-        return self._minusButClicked
-
     def rowCount(self, parentTable=None):
         return len(self._directoryData)
 
     def columnCount(self, parentTable=None):
-        return len(self._directoryData[0])
+        return len(self._headers)
 
     def flags(self, index):
         if (index.column() == 0):
@@ -52,7 +55,10 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
                 else:
                     return "Hearder list too short"
             else:
-                return "#{}".format(section)
+                if self.isLastRow(section):
+                    return ''
+                else:
+                    return "#{}".format(section + 1)
 
     def getEmptyRow(self):
         return ["" for j in range(self.columnCount())]
@@ -84,7 +90,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.EditRole:
             row = index.row()
             column = index.column()
-            #print("setData: Row {} - Column {}".format(row, column))
+            logging.debug("Row {} - Column {}".format(row, column))
 
             #color = QtGui.QColor(value)
 
@@ -100,53 +106,67 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         else:
             return False
 
+    def isLastColumn(self, column):
+        if column == (self.columnCount() - 1):
+            return True
+        else:
+            return False
+
     def addRemoveDirectory(self, button):
         row = self._delegate.getIndexOfButton(button)
-        print("addRemoveDirectory - row #{} - rowCount {}".format(
+        logging.debug("Row #{} - rowCount {}".format(
             row, self.rowCount()))
         if self.isLastRow(row):
-            print("Add dir: row {}".format(row))
+            logging.debug("Add dir: row {}".format(row))
             self.addDirectory(row)
-            print("rowCount {}".format(self.rowCount()))
         else:
-            print("Remove dir: row {}".format(row))
+            logging.debug("Remove dir: row {}".format(row))
             self.removeRow(row)
-            print("rowCount {}".format(self.rowCount()))
 
     def addDirectory(self, row):
-        rootDir = QtWidgets.QFileDialog.getExistingDirectory(self.parentTable,
-            'Root directory', '/', QtWidgets.QFileDialog.ShowDirsOnly |
+        rootDir = QtWidgets.QFileDialog.getExistingDirectory(
+            self.parentTable, 'Root directory', '/',
+            QtWidgets.QFileDialog.ShowDirsOnly |
             QtWidgets.QFileDialog.DontResolveSymlinks)
         #rootDir = "test"
-        print(rootDir)
+        logging.debug(rootDir)
         if rootDir:
-            self._directoryData[row][2] = rootDir
-            startIndex = self.index(row, 0)
-            endIndex = self.index(self.rowCount(), self.columnCount())
+            #qtDebugTrace()
+            logging.debug("dirs\n {}".format(pformat(self._directoryData)))
+            self._directoryData[row][1] = rootDir
+            logging.debug("dirs\n {}".format(pformat(self._directoryData)))
+            startIndex = self.index(row, 1)
             self.insertRows(row, 1)
-            self.dataChanged.emit(startIndex, endIndex)
+            self.dataChanged.emit(startIndex, startIndex)
             self.parentTable.openPersistentEditor(self.index(row + 1, 0))
+
+            logging.info("New directory added: {}".format(rootDir))
             return True
 
         return False
 
     def insertRows(self, row, count, parent=QtCore.QModelIndex()):
-        #print("insertRows: row {} - count {}".format(row, count))
-        self.beginInsertRows(parent, row + 1, row + count)
-        newRow = self.getEmptyRow()
-        for i in range(count):
-            self._directoryData.insert(row + 1 + i, newRow)
-        self.endInsertRows()
-        return True
+        if row >= self.rowCount() + 1:
+            msg = "Tried to insert row at position {} but the table ".format(row)
+            msg = msg + "only has {} rows".format(self.rowCount())
+            warnings.warn(msg, RuntimeWarning)
+            return False
+        else:
+            logging.debug("row {} - count {}".format(row, count))
+            self.beginInsertRows(parent, row + 1, (row + 1) + (count - 1))
+            for i in range(count):
+                newRow = self.getEmptyRow()
+                self._directoryData.insert(row + 1 + i, newRow)
+            self.endInsertRows()
+            return True
 
     def removeRow(self, row, parent=QtCore.QModelIndex()):
-        #print("removeRow: row {}".format(row))
+        logging.debug("row {}".format(row))
         self.beginRemoveRows(parent, row, row)
         #pprint(self._directoryData)
         self._directoryData.pop(row)
         #pprint(self._directoryData)
         index = self.index(row + 1, 0)
-        #self._minusButClicked.emit(row)
         self._delegate.removeButton(row)
         self.dataChanged.emit(index, index)
         self.endRemoveRows()

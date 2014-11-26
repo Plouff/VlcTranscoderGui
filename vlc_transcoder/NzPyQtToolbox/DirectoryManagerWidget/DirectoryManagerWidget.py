@@ -6,13 +6,23 @@
 The Model for the transcoder
 """
 
+# Import PyQt
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
-import sys
-from pprint import pprint
+
+# Import custom PyQt modules
 from DirectoryManagerTableModel import *
 from DirectoryManagerTableDelegate import *
+from DebugTrace import qtDebugTrace
+
+# Import custom modules
+
+# Import standard modules
+import sys
+import logging
+import LoggingTools
+from pprint import pprint
 
 
 class DirectoryManagerWidget(QtWidgets.QWidget):
@@ -28,11 +38,11 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
         self._tableView = QtWidgets.QTableView()
 
         # Create and set the model to the table
-        initialRows = [["" for i in range(len(headers))]]
-        initialRows = [["" for i in range(len(headers))] for i in range(10)]
-        self._model = DirectoryManagerTableModel(initialRows, headers,
-                                                 self._tableView)
+        self._model = DirectoryManagerTableModel(headers, self._tableView)
         self._tableView.setModel(self._model)
+
+        # TEMPORARY
+        #self._model.insertRows(1, 5)
 
         # Create and set delegate to the table
         _delegate = DirectoryManagerTableDelegate(masterWidget=self)
@@ -41,6 +51,9 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
 
         for row in range(0, self._model.rowCount(self)):
             self._tableView.openPersistentEditor(self._model.index(row, 0))
+
+        # Resize first column to fit the size of the buttons
+        self._tableView.resizeColumnToContents(0)
 
         _layout.addWidget(self._tableView)
 
@@ -51,13 +64,13 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
         return self._tableView
 
 
-
 if __name__ == '__main__':
+    LoggingTools.initLogger(logging.INFO)
     app = QtWidgets.QApplication(sys.argv)
-    #app.setStyle("plastique")
 
-    dirWidget = DirectoryManagerWidget(headers=["Controls", "Status",
-                                                "Directory", "Files found"])
+    dirWidget = DirectoryManagerWidget()
+        #headers=["Status", "Files found"])
+
     # Show the widget
     dirWidget.setGeometry(900, 100, 600, 600)
     dirWidget.show()

@@ -6,10 +6,16 @@
 The Model for the transcoder
 """
 
+# Import PyQt modules
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
+
+# Import custom modules
+
+# Import standard modules
 import sys
+import logging
 from pprint import pprint
 
 
@@ -43,12 +49,6 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         self._butClickedMapper.mapped[QtWidgets.QWidget].connect(
             self.model.addRemoveDirectory)
 
-        # A signal to remove buttons for the list of buttons
-        #self._rowRemovedSignal = QtCore.pyqtSignal()
-
-        self._minusButClicked = self.model.getMinusButClickedMapper()
-        #self._minusButClicked.connect(self.removeButton)
-
     def getButtonClickedMapper(self):
         return self._butClickedMapper
 
@@ -56,7 +56,7 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         return self._plusMinusButList.index(button)
 
     def removeButton(self, position):
-        #print("removeButton: position {}".format(position))
+        logging.debug("removeButton: position {}".format(position))
         self._plusMinusButList.pop(position)
 
     def paint(self, painter, option, index):
@@ -78,16 +78,14 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
                 else:
                     self._plusMinusButList[row].setText("-")
             except IndexError as e:
-                print("paint: Row {} - Column {} - RowCount {}".format(
+                logging.error("paint: Row {} - Column {} - RowCount {}".format(
                     row, column, index.model().rowCount()))
-                print(e)
-                raise
+                logging.exception(e)
                 sys.exit()
             except RuntimeError as e:
-                print("paint: Row {} - Column {} - RowCount {}".format(
+                logging.error("paint: Row {} - Column {} - RowCount {}".format(
                     row, column, index.model().rowCount()))
-                print(e)
-                raise
+                logging.exception(e)
                 sys.exit()
 
         else:
@@ -98,11 +96,10 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
     def createEditor(self, parentTable, option, index):
         column = index.column()
         row = index.row()
-        #print("createEditor: Row {} - Column {}".format(row, column))
         if column == 0:
             # Create a container widget
             centeredBut = QtWidgets.QWidget(parentTable)
-            #print("createEditor - parentTable {}".format(parentTable))
+            #logging.debug("parentTable {}".format(parentTable))
             self._plusMinusButList.append(QtWidgets.QPushButton(centeredBut))
 
             # Define maximum size of the _plusMinusButList
@@ -123,30 +120,11 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
                               QtCore.Qt.AlignCenter)
             hbox.setContentsMargins(0, 0, 0, 0)
             centeredBut.setLayout(hbox)
+            logging.debug(
+                "created editor: Row {} - Column {} - Editor {}".format(
+                    row, column, str(self._plusMinusButList[row])))
             return centeredBut
 
-        #elif column == 2:
-            ## create the ProgressBar as our editor.
-            #editor = QtGui.QProgressBar(parentTable)
-            #return editor
-
         else:
-            return QtWidgets.QStyledItemDelegate.createEditor(self,
-                                                              parentTable,
-                                                              option, index)
-
-    #def sizeHint(self, option, index):
-        #column = index.column()
-        #row = index.row()
-        #if column == 0:
-            #print("sizeHint: Row {} - Column {}".format(row, column))
-            #return QtCore.QSize(50, 50)
-        #else:
-            #return QtWidgets.QStyledItemDelegate.sizeHint(self, option, index)
-
-    def setEditorData(self, editor, index):
-        """
-        The setEditorData() function is called when an editor is created to
-        initialize it with data from the model
-        """
-        pass
+            return QtWidgets.QStyledItemDelegate.createEditor(
+                self, parentTable, option, index)
