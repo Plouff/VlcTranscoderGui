@@ -6,19 +6,21 @@
 Contains a checkbox that has the ability to disable slave widgets
 """
 
+# Import PyQt modules
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
-# Abstract class
+# Import standard modules
+# abc: abstract class
 from abc import ABCMeta, abstractmethod
 import pprint
 
 
 class NzQDisablingWidget(QtCore.QObject):
     """
-    This abstract class defines a checkbox widget that will disable slave widgets
-    depending on the value of the master widget
+    This abstract class defines a checkbox widget that will disable slave
+    widgets depending on the value of the master widget
     """
     __metaclass__ = ABCMeta
 
@@ -26,8 +28,9 @@ class NzQDisablingWidget(QtCore.QObject):
         """
         The class constructor
 
-        @param isInMutexGroup bool: To define if the button is part of a group of
-        buttons that are mutually exclusive
+        @param[in] isInMutexGroup bool: To define if the button is part of a
+        group of buttons that are mutually exclusive
+        @param[in] kwds** Other parameters are sent to base class constructor
         """
         super().__init__(**kwds)
 
@@ -52,9 +55,11 @@ class NzQDisablingWidget(QtCore.QObject):
 
         # Set initial state of the widget
         if self.isChecked():
-            slaveWidget.setEnabled(self.slaveStateWhenMasterIsEnabled[slaveWidget])
+            slaveWidget.setEnabled(
+                self.slaveStateWhenMasterIsEnabled[slaveWidget])
         else:
-            slaveWidget.setEnabled(not self.slaveStateWhenMasterIsEnabled[slaveWidget])
+            slaveWidget.setEnabled(
+                not self.slaveStateWhenMasterIsEnabled[slaveWidget])
 
 
     def updateSlaveStatus(self):
@@ -71,7 +76,8 @@ class NzQDisablingWidget(QtCore.QObject):
                 swdgt.setEnabled(self.slaveStateWhenMasterIsEnabled[swdgt])
             else:
                 if not self.isInMutexGroup:
-                    swdgt.setEnabled(not self.slaveStateWhenMasterIsEnabled[swdgt])
+                    swdgt.setEnabled(
+                        not self.slaveStateWhenMasterIsEnabled[swdgt])
 
         QtWidgets.QApplication.processEvents()
         self.updateSlaveDisablingWidgetsStatus()
@@ -100,7 +106,7 @@ class NzQDisablingRadioButton(QtWidgets.QRadioButton, NzQDisablingWidget):
         """
         Constructor of disabling Radio buttons
 
-        @param text str: the text of the checkbox
+        @param text str: the text of the radio button
         @param parent QtWidgets.QWidget: the parent widget
         @param isInMutexGroup bool: To define if the button is part of a group of
         buttons that are mutually exclusive

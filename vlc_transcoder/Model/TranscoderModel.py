@@ -6,54 +6,7 @@
 The Model for the transcoder
 """
 
-from PyQt5 import QtCore
-from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 from collections import OrderedDict
-
-
-class TooltipedDataListModel(QtCore.QAbstractListModel):
-    """
-    TooltipedDataListModel: An extension of the list model to easyly deal with
-    tooltip for simple lists
-    """
-    def __init__(self, tooltipDic = {}, parent=None):
-        """
-        The class constructor
-
-        @param tooltipDic dic: The dictionnary containing the couples
-        (display string, tooltip string)
-        """
-        super().__init__(parent)
-        self.__tooltipDic=tooltipDic
-
-    def rowCount(self, parent):
-        """
-        Mandatory implementation of base class's rowCount
-
-        @param parent: The parent node
-        """
-        return len(self.__tooltipDic.keys())
-
-    def data(self, index, role):
-        """
-        Mandatory implementation of base class's data
-
-        @param index: The index object of the item
-        @param role: The current role being executed
-        """
-        row=index.row()
-        curlist=list(self.__tooltipDic.keys())
-        if role == QtCore.Qt.DisplayRole:
-            return curlist[row]
-        if role == QtCore.Qt.ToolTipRole:
-            key=curlist[row]
-            return self.__tooltipDic[key]
-            try:
-                key=curlist[row]
-                return self.__tooltipDic[key]
-            except:
-                return ''
 
 
 class Model():

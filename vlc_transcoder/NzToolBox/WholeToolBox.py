@@ -4,4 +4,7 @@
 @file NzToolBox/WholeToolBox.py
 To import the whole toolbox easily
 """
-import from NzToolBox import FindFiles
+
+
+from FindFiles import *
+from LoggingTools import *

@@ -6,11 +6,15 @@
 The Input files Tab of the GUI
 """
 
+# Import PyQt modules
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
+# Import custom modules
 from NzPyQtToolbox import NzQWidgets
+
+# Import standard modules
 import pprint
 
 
@@ -22,16 +26,16 @@ class InputFilesTab(QtWidgets.QWidget):
         """
         The constructor for the Configuration tab of the GUI
 
-        @param parent QtWidgets.QWidget: The parent widget
+        @param parent The parent widget
         """
         super().__init__(parent)
         self.parent = parent
 
         grid = QtWidgets.QGridLayout()
-        cRow=0
+        cRow = 0
 
-        addRootDirLabel=QtWidgets.QLabel('Add root directory', self.parent)
-        addRootDirBut=QtWidgets.QToolButton(self.parent)
+        addRootDirLabel = QtWidgets.QLabel('Add root directory', self.parent)
+        addRootDirBut = QtWidgets.QToolButton(self.parent)
         addRootDirBut.setText('...')
 
         grid.addWidget(addRootDirLabel, 0, 1)
@@ -42,11 +46,10 @@ class InputFilesTab(QtWidgets.QWidget):
         # set Layout
         self.setLayout(grid)
 
-
     def openFileBrowser(self):
-        rootdir = QtWidgets.QFileDialog.getExistingDirectory(self,
-                    'Root directory', '/', QtWidgets.QFileDialog.ShowDirsOnly |
-                    QtWidgets.QFileDialog.DontResolveSymlinks)
+        rootdir = QtWidgets.QFileDialog.getExistingDirectory(
+            self, 'Root directory', '/', QtWidgets.QFileDialog.ShowDirsOnly |
+            QtWidgets.QFileDialog.DontResolveSymlinks)
 
         if rootdir:
             controller = self.getController()
@@ -55,4 +58,3 @@ class InputFilesTab(QtWidgets.QWidget):
 
     def getController(self):
         return self.parent.getController()
-

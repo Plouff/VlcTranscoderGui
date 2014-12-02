@@ -7,8 +7,9 @@ Contains the Directory Manager Widget
 
 """
 @package View
-Contains the Graphical User Interface of the transcoder
+Contains the Directory Manager Widget
 """
+
 # List of modules
 __all__ = ['DirectoryManagerWidget.py', 'DirectoryManagerTableModel.py',
            'DirectoryManagerTableDelegate.py']

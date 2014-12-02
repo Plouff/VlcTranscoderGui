@@ -3,8 +3,8 @@
 
 """
 @file NzQWidgets.py
-Contains custom Widgets
+A module to easily import all custom widgets
+@bug Doesn't work corectly at the moment
 """
 
-from NzPyQtToolbox.NzQDisablingWidgets import *
-
+from NzQDisablingWidgets import *

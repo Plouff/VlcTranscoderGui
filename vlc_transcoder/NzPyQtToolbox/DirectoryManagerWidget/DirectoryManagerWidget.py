@@ -12,9 +12,10 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 
 # Import custom PyQt modules
-from DirectoryManagerTableModel import *
-from DirectoryManagerTableDelegate import *
+from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableModel import *
+from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableDelegate import DirectoryManagerTableDelegate
 from DebugTrace import qtDebugTrace
+from WholeToolBox import *
 
 # Import custom modules
 
@@ -27,49 +28,161 @@ from pprint import pprint
 
 class DirectoryManagerWidget(QtWidgets.QWidget):
     """
-    A simple test widget to contain and own the model and table.
+    A widget to contain and own the model and table to manage directories in a
+    table view.
     """
-    def __init__(self, headers=[], parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
 
-        _layout = QtWidgets.QVBoxLayout(self)
-
-        # A table view
+        # Create the table view
         self._tableView = QtWidgets.QTableView()
 
-        # Create and set the model to the table
-        self._model = DirectoryManagerTableModel(headers, self._tableView)
-        self._tableView.setModel(self._model)
-
-        # TEMPORARY
-        #self._model.insertRows(1, 5)
-
-        # Create and set delegate to the table
-        _delegate = DirectoryManagerTableDelegate(masterWidget=self)
-        self._tableView.setItemDelegate(_delegate)
-        self._model.setDelegate(_delegate)
-
-        for row in range(0, self._model.rowCount(self)):
-            self._tableView.openPersistentEditor(self._model.index(row, 0))
-
-        # Resize first column to fit the size of the buttons
-        self._tableView.resizeColumnToContents(0)
-
+        # The layout
+        _layout = QtWidgets.QVBoxLayout(self)
         _layout.addWidget(self._tableView)
 
+        self.ctrlButCol = 0
+
+    def __repr__(self):
+        model = self.getModel()
+        delegate = self.getDelegate()
+        tableview = self.getTableView()
+        msg = ("{}@{}(_tableView={!r}@{}, _model={!r}, _delegate={!r}".format(
+            self.__class__.__name__, hex(id(self)),
+            tableview.__class__.__name__, hex(id(tableview)), model, delegate)
+        )
+        return msg
+
+    def setModelToView(self, model):
+        """
+        Set a directory manager table model to a table view. Some internal
+        stuff is also done.
+
+        @param[in] model The DirectoryManagerTableModel to set to the table
+        view
+        """
+        if not isinstance(model, DirectoryManagerTableModel):
+            raise RuntimeError(("Model assigned to this widget must inherit "
+                                "from DirectoryManagerTableModel. Got type "
+                                "{}".format(model.__class__.__name__)))
+        self._model = model
+        # Qt setModel
+        self._tableView.setModel(self._model)
+
+        # Connect newButtonCreated to a method that will create the button on
+        # the next row
+        self._model.newButtonCreated.connect(
+            self.createPersistentEditorOnNextRow)
+
+        # Connect directoryAdded to the method that will process the new
+        # directory
+        self._model.directoryAdded.connect(self.DirectoryAddedProcessing)
+
     def getModel(self):
+        """
+        Getter for the model
+
+        @return The model in use
+        """
+        if not self._model:
+            raise RuntimeError(("No model set to the widget. You must use "
+                                "method setModelToView to set it up"))
         return self._model
 
     def getTableView(self):
+        """
+        Getter for the table view
+
+        @return The table view in use
+        """
         return self._tableView
 
+    def getDelegate(self):
+        """
+        Getter for the delegate
+
+        @return The delegate in use
+        """
+        return self._delegate
+
+    def setItemDelegate(self, delegate):
+        """
+        A custom setItemDelegate method.
+        It will set the delegate to the table view (Qt standard) and to the
+        model (custom implementation).
+        Then it will ask the delagate to create the buttons in initial rows.
+
+        @param[in] delagate The item delegate that deals with the view
+        """
+        if not isinstance(delegate, DirectoryManagerTableDelegate):
+            raise RuntimeError(("Model assigned to this widget must inherit "
+                                "from DirectoryManagerTableDelegate"))
+        self._delegate = delegate
+        # Qt setItemDelegate
+        self._tableView.setItemDelegate(delegate)
+        # Custom setItemDelegate
+        self._model.setDelegate(delegate)
+
+        # Create +/- intial buttons
+        for row in range(self._model.rowCount(self)):
+            self._tableView.openPersistentEditor(
+                self._model.index(row, self.ctrlButCol))
+
+        # Resize first column to fit the size of the buttons
+        self._tableView.resizeColumnToContents(self.ctrlButCol)
+
+    def createPersistentEditorOnNextRow(self, startIndex):
+        """
+        Create a +/- button when a new row is added.
+
+        @param[in] startIndex The @c QModelIndex that define where the change
+        occured
+        """
+        #qtDebugTrace()
+        startRow = startIndex.row()
+
+        # Check the index is valid
+        if startRow == -1:
+            logging.error("Invalid row {} from index: {}".format(
+                startRow, startIndex))
+            msg = ("Received an invalid QModelIndex, "
+                   "can't open persistent editor")
+            raise RuntimeError(msg)
+
+        elif self._model.isLastRow(startRow + 1):
+            # if the signal was emitted from the last row => create new button
+            self._tableView.openPersistentEditor(
+                self._model.index(startRow + 1, self.ctrlButCol))
+            logging.debug("Persisent editor created on row {}".format(
+                startRow + 1))
+
+    def DirectoryAddedProcessing(self, dir):
+        """
+        An abstract method (even if we don't use ABC module).
+        This method needs to be implement in derived classes to process the
+        newly added directory
+        """
+        currentFuncName = sys._getframe().f_code.co_name
+        raise NotImplementedError(
+            "method {} must be implemented in derived class".format(
+                currentFuncName))
 
 if __name__ == '__main__':
     LoggingTools.initLogger(logging.INFO)
+    #LoggingTools.initLogger(logging.DEBUG)
     app = QtWidgets.QApplication(sys.argv)
 
+    # Create the directory widget
     dirWidget = DirectoryManagerWidget()
-        #headers=["Status", "Files found"])
+
+    # Create and set model to the widget and its table view
+    additionnalHeaders = ["Test1", "Test2", "Test3"]
+    model = DirectoryManagerTableModel(dirWidget, additionnalHeaders)
+    dirWidget.setModelToView(model)
+
+    # Create and set delegate to the widget
+    delegate = DirectoryManagerTableDelegate(dirWidget)
+    dirWidget.setItemDelegate(delegate)
 
     # Show the widget
     dirWidget.setGeometry(900, 100, 600, 600)

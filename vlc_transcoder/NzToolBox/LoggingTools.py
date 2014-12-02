@@ -26,8 +26,17 @@ def parseLoggingLevel(loglevel):
 def initLogger(level=logging.DEBUG):
     """
     Initialize a logger with default display attributes and with DEBUG level
+
+    @param[in] level The initial verbosity level of the logger
     """
-    logging.basicConfig(
-        format='%(levelname)s-%(module)s:%(lineno)d-%(funcName)s: %(message)s',
-        level=level)
+    if level == logging.DEBUG:
+        # Display more stuff when in a debug mode
+        logging.basicConfig(
+            format='%(levelname)s-%(module)s:%(lineno)d-%(funcName)s: %(message)s',
+            level=level)
+    else:
+        # Display less stuff for info mode
+        logging.basicConfig(
+            format='%(levelname)s: %(message)s',
+            level=level)
 

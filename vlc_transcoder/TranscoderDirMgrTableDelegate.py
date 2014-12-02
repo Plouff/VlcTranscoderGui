@@ -22,22 +22,23 @@ from pprint import pprint
 class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
     """
     Class that defines and implement the visual customization of the table
-    view to show "+" and "-" buttons to add/delete directories
+    view to show:
+        @li "+" and "-" buttons to add delete directories
+        @li a status icon
+
+    @todo Add a running bar instead of the icon
     """
-    def __init__(self, parent):
+    def __init__(self, masterWidget):
         """
         Class constructor
 
-        @param[in] parent The parent widget containing this table delegate
+        @param[in] masterWidget The master widget containing this table
+        delegate
         """
-        # Store parent
-        self.parent = parent
-
-        # Get model and table view from parent
-        self.model = parent.getModel()
-        self.parentTable = parent.getTableView()
-
-        # Initialize the list of button objects
+        # Set some pointers
+        self.masterWidget = masterWidget
+        self.model = masterWidget.getModel()
+        self.parentTable = masterWidget.getTableView()
         self._plusMinusButList = []
 
         # Call parent constructor
@@ -48,19 +49,19 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         self._butClickedMapper.mapped[QtWidgets.QWidget].connect(
             self.model.addRemoveDirectory)
 
-    def __repr__(self):
-        msg = ("{}@{}(parent={}@{}, model={!r}, _plusMinusButList={})".format(
-            self.__class__.__name__, hex(id(self)),
-            self.parent.__class__.__name__, hex(id(self.parent)),
-            self.model, self._plusMinusButList))
-        return msg
+    def getButtonClickedMapper(self):
+        return self._butClickedMapper
 
-    #
-    # STANDARD QT METHODS
-    #
+    def getIndexOfButton(self, button):
+        return self._plusMinusButList.index(button)
+
+    def removeButton(self, position):
+        logging.debug("removeButton: position {}".format(position))
+        self._plusMinusButList.pop(position)
+
     def paint(self, painter, option, index):
         """
-        Method to draw the model on the view.
+        Method to draw the model.
 
         @param[in] painter The painter to use to draw
         @param[in] option The QStyleOptionViewItem defining the needed object
@@ -68,7 +69,6 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         @param[in] index The index information of the cell being dealt with
         """
 
-        # Get row and column
         column = index.column()
         row = index.row()
         if column == 0:
@@ -128,31 +128,3 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         else:
             return QtWidgets.QStyledItemDelegate.createEditor(
                 self, parentTable, option, index)
-
-    #
-    # CUSTOM METHODS
-    #
-    def getIndexOfButton(self, button):
-        """
-        Get index of a given button object in the list of +/- buttons
-
-        @param[in] button The +/- button that index is needed
-        """
-        return self._plusMinusButList.index(button)
-
-    def getButtonClickedMapper(self):
-        """
-        Getter for the button clicked signal mapper
-        """
-        return self._butClickedMapper
-
-    def removeButton(self, index):
-        """
-        Helper to remove a +/- button from the list of +/- buttons
-
-        @param[in] index The index of the +/- button to remove
-
-        @return the button object removed
-        """
-        logging.debug("removeButton: position {}".format(index))
-        return self._plusMinusButList.pop(index)

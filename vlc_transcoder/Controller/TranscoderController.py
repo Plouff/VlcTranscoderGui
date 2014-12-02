@@ -7,7 +7,7 @@ The Controller for the transcoder
 """
 
 from PyQt5 import QtCore
-import Model.TranscoderModel as TranscoderModel
+from NzPyQtToolbox.NzToolTipList import TooltipedDataListModel as TooltipListModel
 
 class Controller():
     """
@@ -41,17 +41,17 @@ class Controller():
 
     def ConnectModelAndView(self):
         # Encapsulator
-        self.encapsulatorModel = TranscoderModel.TooltipedDataListModel(
+        self.encapsulatorModel = TooltipListModel(
             self.model.encapsulatorsODic)
         self.view.encapsCombo.setModel(self.encapsulatorModel)
 
         # Video codec
-        self.vCodecModel = TranscoderModel.TooltipedDataListModel(
+        self.vCodecModel = TooltipListModel(
             self.model.vCodecODic)
         self.view.vCodecCombo.setModel(self.vCodecModel)
 
         # Audio codec
-        self.aCodecModel = TranscoderModel.TooltipedDataListModel(
+        self.aCodecModel = TooltipListModel(
             self.model.aCodecODic)
         self.view.aCodecCombo.setModel(self.aCodecModel)
 
@@ -60,11 +60,12 @@ class Controller():
         self.view.aBitRateCombo.setModel(self.aBitRateModel)
 
         # Sample rate
-        self.aSampleRateModel = QtCore.QStringListModel(self.model.aSampleRateList)
+        self.aSampleRateModel = QtCore.QStringListModel(
+            self.model.aSampleRateList)
         self.view.aSampleRateCombo.setModel(self.aSampleRateModel)
 
         # Standard Resolution
-        self.stdResolModel = TranscoderModel.TooltipedDataListModel(
+        self.stdResolModel = TooltipListModel(
             self.model.stdResolutionOdic)
         self.view.byStdResolCombo.setModel(self.stdResolModel)
 

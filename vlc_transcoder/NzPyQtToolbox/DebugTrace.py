@@ -9,7 +9,9 @@ A utility function to debug code. Source:
 
 
 def qtDebugTrace():
-    '''Set a tracepoint in the Python debugger that works with Qt'''
+    """
+    Set a tracepoint in the Python debugger that works with Qt
+    """
     from PyQt5.QtCore import pyqtRemoveInputHook
     from pdb import set_trace
     pyqtRemoveInputHook()
