@@ -18,20 +18,16 @@ from View.InputFilesTab import *
 # Import standard modules
 
 
-class View(QtWidgets.QWidget):
+class TranscoderView(QtWidgets.QWidget):
     """
     This is the View part of the MVC implementation. It will describe the GUI
     of the application
     """
-    def __init__(self,  app):
+    def __init__(self):
         """
         The constructor of the View
-
-        @param[in] app QtWidgets.QApplication: the root QApplication
         """
         super().__init__()
-        self.app = app
-        self.tabs = self.initUI()
 
     def initUI(self):
         """
@@ -63,7 +59,7 @@ class View(QtWidgets.QWidget):
         # Create the input files tab
         inputtab = InputFilesTab(self)
 
-        tabWidget.addTab(conftab, "Configuration")
+        tabWidget.addTab(conftab, "Output Configuration")
         tabWidget.addTab(inputtab, "Input files")
 
         return tabWidget

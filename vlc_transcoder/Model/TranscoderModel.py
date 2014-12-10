@@ -9,7 +9,7 @@ The Model for the transcoder
 from collections import OrderedDict
 
 
-class Model():
+class TranscoderModel():
     """
     This is a the 'Model' part of the MVC implementation. It contains data
     regarding the settings of the transcoder

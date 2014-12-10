@@ -7,9 +7,11 @@ The Controller for the transcoder
 """
 
 from PyQt5 import QtCore
-from NzPyQtToolbox.NzToolTipList import TooltipedDataListModel as TooltipListModel
+from NzPyQtToolbox.NzToolTipList import \
+    TooltipedDataListModel as TooltipListModel
 
-class Controller():
+
+class TranscoderController():
     """
     This is a the 'Controller' part of the MVC implementation. It deals with
     the communication between the View and the Model
@@ -29,15 +31,11 @@ class Controller():
         self.model.controller = self
         self.view.controller = self
 
-        self.ConnectModelAndView()
-
-
     def addRootDirectory(self, rootDir):
         """
         Append a root directory to the list of root directories in the Model
         """
         self.model.addRootDirectory(rootDir)
-
 
     def ConnectModelAndView(self):
         # Encapsulator
@@ -76,5 +74,3 @@ class Controller():
         # Resize by width
         self.widthModel = QtCore.QStringListModel(self.model.vWidthList)
         self.view.byWidthCombo.setModel(self.widthModel)
-
-

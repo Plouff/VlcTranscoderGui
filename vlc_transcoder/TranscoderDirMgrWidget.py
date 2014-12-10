@@ -12,19 +12,23 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 
 # Import custom PyQt modules
-from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerWidget import DirectoryManagerWidget
-from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableModel import DirectoryManagerTableModel
-from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableDelegate import DirectoryManagerTableDelegate
+from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerWidget \
+    import DirectoryManagerWidget
+from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableModel \
+    import DirectoryManagerTableModel
+from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableDelegate \
+    import DirectoryManagerTableDelegate
+
 from TranscoderDirMgrTableModel import TranscoderDirMgrTableModel
 from NzPyQtToolbox.DebugTrace import qtDebugTrace
 from NzToolBox.WholeToolBox import *
 
 # Import custom modules
+import LoggingTools
 
 # Import standard modules
 import sys
 import logging
-import LoggingTools
 from pprint import pprint
 
 
@@ -67,7 +71,7 @@ if __name__ == '__main__':
     dirWidget = TranscoderDirMgrWidget()
 
     # Create and set model to the widget and its table view
-    additionnalHeaders = ["Status", "Files"]
+    additionnalHeaders = ["Status", "Files", "Extensions"]
     model = TranscoderDirMgrTableModel(
         dirWidget.getTableView(), additionnalHeaders)
     dirWidget.setModelToView(model)
