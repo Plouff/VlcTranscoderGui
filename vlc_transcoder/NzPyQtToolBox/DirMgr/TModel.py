@@ -2,8 +2,8 @@
 #-*-coding: utf-8 -*-
 
 """
-@file DirectoryManagerTableDelegate.py
-The Model for the transcoder
+@file TModel.py
+The table model for the Directory Manager Widget
 """
 
 # Import PyQt

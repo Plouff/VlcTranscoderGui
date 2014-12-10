@@ -13,7 +13,7 @@ from PyQt5 import QtCore
 
 # Import custom modules
 from NzToolBox import LoggingTools
-from NzPyQtToolbox.DebugTrace import qtDebugTrace
+from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
 # Import standard modules
 from pprint import pprint

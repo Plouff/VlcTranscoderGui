@@ -12,12 +12,11 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 # Import custom modules
-#from NzPyQtToolbox import NzQWidgets
-from NzPyQtToolbox.NzQAutoGridWidgets import NzQAutoGridCheckboxes
-from TranscoderDirMgrWidget import TranscoderDirMgrWidget
-from TranscoderDirMgrTableModel import TranscoderDirMgrTableModel
-from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableDelegate \
-    import DirectoryManagerTableDelegate
+#from NzPyQtToolBox import NzQWidgets
+from NzPyQtToolBox.NzQAutoGridWidgets import NzQAutoGridCheckboxes
+from DirMgr.Widget import TranscoderDirMgrWidget
+from DirMgr.TModel import TranscoderDirMgrTableModel
+from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
 
 # Import standard modules
 import pprint

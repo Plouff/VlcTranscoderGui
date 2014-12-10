@@ -2,6 +2,7 @@
 #-*-coding: utf-8 -*-
 
 """
+@file vlc_trancoder.py
 VLC Transcoder GUI
 
 A GUI to transcode videos with VLC
@@ -14,9 +15,9 @@ created: 20/10/14
 from PyQt5 import QtWidgets
 
 # Import custom modules
-from View.TranscoderView import TranscoderView
-from Model.TranscoderModel import TranscoderModel
-from Controller.TranscoderController import TranscoderController
+from MainView import MainView
+from MainModel import MainModel
+from MainController import MainController
 from NzToolBox import LoggingTools
 
 # Import standard modules
@@ -36,11 +37,11 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
 
     # Create the main view
-    view = TranscoderView()
+    view = MainView()
     # Create the main model
-    model = TranscoderModel()
+    model = MainModel()
     # Create the main controller
-    controller = TranscoderController(model, view)
+    controller = MainController(model, view)
 
     # Initialize the UI (ie create widgets)
     view.initUI()
@@ -55,5 +56,6 @@ if __name__ == '__main__':
 # vlc -vvv input_stream --sout
 # #transcode{vcodec=mp4v,acodec=mpga,vb=800,ab=128,deinterlace}: CALL
 # "C:\Program Files\VideoLAN\VLC\vlc" -I dummy -vvv %1
-#--sout=#transcode{acodec="mpga",ab="512",channels="2",samplerate="44100"}:standard{access="file",mux="mpeg1",dst="%_commanm%.mp3"}
+#--sout=#transcode{acodec="mpga",ab="512",channels="2",samplerate="44100"}: \
+#    standard{access="file",mux="mpeg1",dst="%_commanm%.mp3"}
 #vlc://quit

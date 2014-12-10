@@ -2,14 +2,14 @@
 #-*-coding: utf-8 -*-
 
 """
-@file TranscoderModel.py
+@file MainModel.py
 The Model for the transcoder
 """
 
 from collections import OrderedDict
 
 
-class TranscoderModel():
+class MainModel():
     """
     This is a the 'Model' part of the MVC implementation. It contains data
     regarding the settings of the transcoder

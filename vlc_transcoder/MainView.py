@@ -2,7 +2,7 @@
 #-*-coding: utf-8 -*-
 
 """
-@file TranscoderView.py
+@file MainView.py
 The View of the transcoder GUI
 """
 
@@ -12,13 +12,13 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 # Import custom modules
-from View.ConfTab.ConfigurationTab import ConfigurationTab
-from View.InputTab.InputFilesTab import InputFilesTab
+from Tabs.ConfigurationTab import ConfigurationTab
+from Tabs.InputFilesTab import InputFilesTab
 
 # Import standard modules
 
 
-class TranscoderView(QtWidgets.QWidget):
+class MainView(QtWidgets.QWidget):
     """
     This is the View part of the MVC implementation. It will describe the GUI
     of the application

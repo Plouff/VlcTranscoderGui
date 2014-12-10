@@ -12,7 +12,7 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 # Import custom modules
-from NzPyQtToolbox import NzQWidgets
+from NzPyQtToolBox import NzQWidgets
 
 # Import standard modules
 

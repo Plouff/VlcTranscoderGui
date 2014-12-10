@@ -2,8 +2,8 @@
 #-*-coding: utf-8 -*-
 
 """
-@file DirectoryManagerWidget.py
-The Model for the transcoder
+@file Widget.py
+The Directory Manager Widget
 """
 
 # Import PyQt
@@ -12,8 +12,8 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtGui
 
 # Import custom PyQt modules
-from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableModel import *
-from NzPyQtToolbox.DirectoryManagerWidget.DirectoryManagerTableDelegate import DirectoryManagerTableDelegate
+from NzPyQtToolBox.DirMgr.TModel import DirectoryManagerTableModel
+from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
 from DebugTrace import qtDebugTrace
 from WholeToolBox import *
 

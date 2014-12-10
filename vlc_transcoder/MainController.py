@@ -2,16 +2,16 @@
 #-*-coding: utf-8 -*-
 
 """
-@file TranscoderController.py
+@file MainController.py
 The Controller for the transcoder
 """
 
 from PyQt5 import QtCore
-from NzPyQtToolbox.NzToolTipList import \
+from NzPyQtToolBox.NzToolTipList import \
     TooltipedDataListModel as TooltipListModel
 
 
-class TranscoderController():
+class MainController():
     """
     This is a the 'Controller' part of the MVC implementation. It deals with
     the communication between the View and the Model
