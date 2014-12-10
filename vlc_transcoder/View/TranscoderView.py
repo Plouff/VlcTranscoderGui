@@ -12,8 +12,8 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 # Import custom modules
-from View.ConfigurationTab import *
-from View.InputFilesTab import *
+from View.ConfTab.ConfigurationTab import ConfigurationTab
+from View.InputTab.InputFilesTab import InputFilesTab
 
 # Import standard modules
 

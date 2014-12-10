@@ -10,18 +10,27 @@ author: Nassim Zga
 created: 20/10/14
 """
 
+# Import PyQt modules
 from PyQt5 import QtWidgets
 
+# Import custom modules
 from View.TranscoderView import TranscoderView
 from Model.TranscoderModel import TranscoderModel
 from Controller.TranscoderController import TranscoderController
+from NzToolBox import LoggingTools
 
+# Import standard modules
+import logging
 
 """
 Script wrapper
 """
 if __name__ == '__main__':
     import sys
+
+    # Configure logger
+    #LoggingTools.initLogger(logging.DEBUG)
+    LoggingTools.initLogger(logging.INFO)
 
     # Create the app
     app = QtWidgets.QApplication(sys.argv)

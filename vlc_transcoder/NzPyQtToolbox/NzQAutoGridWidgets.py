@@ -41,6 +41,9 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
     At the moment the order of the element will be different if
     you provide @c maxRowCount or @c maxColumnCount, even if you provide the
     same list of data
+
+    @todo This widget could be a ModelView widget to automatically update the
+    checkboxes if the input data changes
     """
     def __init__(self, data, maxRowCount=0, maxColumnCount=0, parent=None):
         """
@@ -129,8 +132,6 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
 
                 # Update row and column counters
                 (cRow, cCol) = self._updateIndex(cRow, cCol)
-
-            pprint(self._checkboxes)
             return True
 
     def _checkBoxPyGenerator(self, data):

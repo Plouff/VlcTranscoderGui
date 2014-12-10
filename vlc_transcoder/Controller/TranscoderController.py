@@ -20,8 +20,8 @@ class TranscoderController():
         """
         The class constructor
 
-        @param model: the model of the MVC GUI
-        @param view: the view of the MVC GUI
+        @param model the model of the MVC GUI
+        @param view the view of the MVC GUI
         """
         # Save pointers to model and view
         self.model = model
@@ -38,6 +38,9 @@ class TranscoderController():
         self.model.addRootDirectory(rootDir)
 
     def ConnectModelAndView(self):
+        """
+        Create models and connect them to the different views.
+        """
         # Encapsulator
         self.encapsulatorModel = TooltipListModel(
             self.model.encapsulatorsODic)

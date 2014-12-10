@@ -11,4 +11,4 @@ Contains the View of the transcoder GUI
 Defines the module for the View of the transcoder GUI
 """
 # List of modules
-__all__ = ['ConfigurationTab.py', 'TranscoderView.py']
+__all__ = ['TranscoderView.py', 'ConfTab', 'InputTab']
