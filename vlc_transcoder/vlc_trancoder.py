@@ -49,7 +49,6 @@ if __name__ == '__main__':
     # Connect Models to Views
     controller.ConnectModelAndView()
 
-    view
     sys.exit(app.exec_())
 
 

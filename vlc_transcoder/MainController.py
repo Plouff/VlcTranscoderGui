@@ -6,9 +6,15 @@
 The Controller for the transcoder
 """
 
+# Import PyQt modules
 from PyQt5 import QtCore
+
+# Import custom modules
 from NzPyQtToolBox.NzToolTipList import \
     TooltipedDataListModel as TooltipListModel
+from Controllers.ConfTabCtrl import ConfTabCtrl
+
+# Import standard modules
 
 
 class MainController():
@@ -31,6 +37,13 @@ class MainController():
         self.model.controller = self
         self.view.controller = self
 
+        # Create dedicated controllers
+        try:
+            confTab = view.confTab
+            self.confTabCtrl = ConfTabCtrl(model, view.confTab)
+        except Exception as e:
+            raise e
+
     def addRootDirectory(self, rootDir):
         """
         Append a root directory to the list of root directories in the Model
@@ -39,41 +52,6 @@ class MainController():
 
     def ConnectModelAndView(self):
         """
-        Create models and connect them to the different views.
+        Create models and connect them to the different views
         """
-        # Encapsulator
-        self.encapsulatorModel = TooltipListModel(
-            self.model.encapsulatorsODic)
-        self.view.encapsCombo.setModel(self.encapsulatorModel)
-
-        # Video codec
-        self.vCodecModel = TooltipListModel(
-            self.model.vCodecODic)
-        self.view.vCodecCombo.setModel(self.vCodecModel)
-
-        # Audio codec
-        self.aCodecModel = TooltipListModel(
-            self.model.aCodecODic)
-        self.view.aCodecCombo.setModel(self.aCodecModel)
-
-        # Audio bitrate
-        self.aBitRateModel = QtCore.QStringListModel(self.model.aBitRateList)
-        self.view.aBitRateCombo.setModel(self.aBitRateModel)
-
-        # Sample rate
-        self.aSampleRateModel = QtCore.QStringListModel(
-            self.model.aSampleRateList)
-        self.view.aSampleRateCombo.setModel(self.aSampleRateModel)
-
-        # Standard Resolution
-        self.stdResolModel = TooltipListModel(
-            self.model.stdResolutionOdic)
-        self.view.byStdResolCombo.setModel(self.stdResolModel)
-
-        # Resize by height
-        self.heightModel = QtCore.QStringListModel(self.model.vHeightList)
-        self.view.byHeightCombo.setModel(self.heightModel)
-
-        # Resize by width
-        self.widthModel = QtCore.QStringListModel(self.model.vWidthList)
-        self.view.byWidthCombo.setModel(self.widthModel)
+        self.confTabCtrl.ConnectModelAndView()
