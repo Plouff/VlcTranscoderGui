@@ -26,12 +26,14 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
     A widget to generate a grid of checkboxes
 
     @section Usage Usage
+    @subsection init Initialize the widget
+    You first need to create an empty widget. Just set @c maxRowCount or @c
+    maxColumnCount to constraint the grid that will be generated.
+
     @subsection create Create the widget
-    Use @c data argument of the constructor to provide the texts for the
-    checkboxes. If @c data is a @c dic then the @e keys will be used as text
-    for the checkboxes and the @e values will be used for the tooltip.  You
-    also need to set @c maxRowCount or @c maxColumnCount to constraint the grid
-    that will be generated.
+    Call @c createCheckboxes using @c data argument to provide the texts for
+    the checkboxes. If @c data is a @c dic then the @e keys will be used as
+    text for the checkboxes and the @e values will be used for the tooltip.
 
     @subsection get_data Get data from the widget
     Simply access the public atttribute @c self.choices.
@@ -45,7 +47,7 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
     @todo This widget could be a ModelView widget to automatically update the
     checkboxes if the input data changes
     """
-    def __init__(self, data, maxRowCount=0, maxColumnCount=0, parent=None):
+    def __init__(self, maxRowCount=0, maxColumnCount=0, parent=None):
         """
         The class constructor
 
@@ -62,7 +64,7 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
         @c maxColumnCount must be @c >0. In other word you need to constraint
         the number of rows or columns but not both.
 
-        @return A widget containing the checkboxes
+        @return An empty widget pointer
         """
         super().__init__(parent)
         # Check paremeters
@@ -89,17 +91,14 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
             self._checkedMapper.mapped[QtWidgets.QWidget].connect(
                 self._updateListOfChoices)
 
-        # Create widget
-        self._createWidget(data, parent)
-
-    def _createWidget(self, data, parent):
+    def createCheckboxes(self, data):
         """
         Process the data to generate the checkboxes
 
         @param[in] data The input data to be displayed
         @param[in] parent The parent widget
 
-        @return a Boolean depending on success of the creation of the widget
+        @return a boolean depending on success of the creation of the widget
         """
         # Create the grid
         grid = QtWidgets.QGridLayout(self)
@@ -233,8 +232,13 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
 
-    wdgtList = NzQAutoGridCheckboxes(textlist, maxColumnCount=7)
-    wdgtOdic = NzQAutoGridCheckboxes(textodic, maxRowCount=4)
+    # Create empty widget
+    wdgtList = NzQAutoGridCheckboxes(maxColumnCount=7)
+    wdgtOdic = NzQAutoGridCheckboxes(maxRowCount=4)
+
+    # Fill widget
+    wdgtList.createCheckboxes(textlist)
+    wdgtOdic.createCheckboxes(textodic)
 
     wdgtList.show()
     wdgtOdic.show()
