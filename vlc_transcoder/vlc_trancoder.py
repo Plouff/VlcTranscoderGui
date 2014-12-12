@@ -43,11 +43,8 @@ if __name__ == '__main__':
     # Create the main controller
     controller = MainController(model, view)
 
-    # Initialize the UI (ie create widgets)
-    view.initUI()
-
-    # Connect Models to Views
-    controller.ConnectModelAndView()
+    # Initialize the GUI
+    controller.initGUI()
 
     sys.exit(app.exec_())
 

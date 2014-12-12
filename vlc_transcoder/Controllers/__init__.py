@@ -10,4 +10,4 @@ Controllers for specific part of the GUI
 Controllers for specific part of the GUI
 """
 # List of modules
-__all__ = ['ConfTabCtrl.py']
+__all__ = ['ConfTabCtrl.py', 'InputTabCtrl.py']

@@ -29,8 +29,8 @@ class MainView(QtWidgets.QWidget):
         """
         super().__init__()
 
-        # Initialize tabs
-        self.tabWidget = self.initTabs()
+        # Initial the main Window
+        self.initUI()
 
     def initUI(self):
         """
@@ -38,14 +38,19 @@ class MainView(QtWidgets.QWidget):
         """
         # Set GUI title
         self.setWindowTitle("VLC Transcoder")
+        # Init tabs
+        self.tabWidget = self.initTabs()
+
         # Create layout and add the tabs
         mainLayout = QtWidgets.QVBoxLayout()
+
         mainLayout.addWidget(self.tabWidget)
+
         # Set an Icon
         self.setWindowIcon(QtGui.QIcon('icon.png'))
-        # Show widget
+
+        # Set Layout
         self.setLayout(mainLayout)
-        self.show()
 
     def initTabs(self):
         """
@@ -53,12 +58,15 @@ class MainView(QtWidgets.QWidget):
 
         @return A @c QTabWidget containing the defined tabs
         """
+        # Create a tab widget
+        tabWidget = QtWidgets.QTabWidget(self)
+
         # Create the configuration tab
         self.confTab = ConfigurationTab(self)
         # Create the input files tab
         self.inputTab = InputFilesTab(self)
 
-        self.tabWidget.addTab(self.confTab, "&Output Configuration")
-        self.tabWidget.addTab(self.inputTab, "&Input files")
+        tabWidget.addTab(self.confTab, "&Output Configuration")
+        tabWidget.addTab(self.inputTab, "&Input files")
 
-        return self.tabWidget
+        return tabWidget

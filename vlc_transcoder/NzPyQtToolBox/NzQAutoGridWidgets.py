@@ -27,13 +27,14 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
 
     @section Usage Usage
     @subsection init Initialize the widget
-    You first need to create an empty widget. Just set @c maxRowCount or @c
-    maxColumnCount to constraint the grid that will be generated.
+    You first need to create an empty widget.
 
     @subsection create Create the widget
     Call @c createCheckboxes using @c data argument to provide the texts for
     the checkboxes. If @c data is a @c dic then the @e keys will be used as
     text for the checkboxes and the @e values will be used for the tooltip.
+    Use @c maxRowCount or @c maxColumnCount to constraint the grid that will be
+    generated.
 
     @subsection get_data Get data from the widget
     Simply access the public atttribute @c self.choices.
@@ -47,9 +48,28 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
     @todo This widget could be a ModelView widget to automatically update the
     checkboxes if the input data changes
     """
-    def __init__(self, maxRowCount=0, maxColumnCount=0, parent=None):
+    def __init__(self, parent=None):
         """
         The class constructor
+
+        @param[in] parent The parent widget
+
+        @return An empty widget pointer
+        """
+        super().__init__(parent)
+        # Create a matrice that will contain the checkboxes pointers
+        self._checkboxes = [[]]
+
+        # Some stuff to generate a list with checkboxes data that are
+        # checked
+        self.choices = []
+        self._checkedMapper = QtCore.QSignalMapper(self)
+        self._checkedMapper.mapped[QtWidgets.QWidget].connect(
+            self._updateListOfChoices)
+
+    def createCheckboxes(self, data, maxRowCount=0, maxColumnCount=0):
+        """
+        Process the data to generate the checkboxes
 
         @param[in] data If @c data is a dictionnary then a checkbox with a
         tooltip will be displayed, else if it is just a list simple checkboxes
@@ -60,14 +80,13 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
         @param[in] maxColumnCount int: The maximum number of checkboxes per
         column Use @c 0 for no maximum
 
+        @return a boolean depending on success of the creation of the widget
+
         @warning At least one, but only one of the parameter @c maxRowCount and
         @c maxColumnCount must be @c >0. In other word you need to constraint
         the number of rows or columns but not both.
-
-        @return An empty widget pointer
         """
-        super().__init__(parent)
-        # Check paremeters
+        # Check maxRowCount and maxColumnCount
         if maxRowCount > 0 and maxColumnCount > 0:
             raise RuntimeError(
                 "maxRowCount and maxColumnCount can't be set a the same time")
@@ -81,25 +100,6 @@ class NzQAutoGridCheckboxes(QtWidgets.QWidget):
             self._maxRowCount = maxRowCount
             self._maxColumnCount = maxColumnCount
 
-            # Create a matrice that will contain the checkboxes pointers
-            self._checkboxes = [[]]
-
-            # Some stuff to generate a list with checkboxes data that are
-            # checked
-            self.choices = []
-            self._checkedMapper = QtCore.QSignalMapper(self)
-            self._checkedMapper.mapped[QtWidgets.QWidget].connect(
-                self._updateListOfChoices)
-
-    def createCheckboxes(self, data):
-        """
-        Process the data to generate the checkboxes
-
-        @param[in] data The input data to be displayed
-        @param[in] parent The parent widget
-
-        @return a boolean depending on success of the creation of the widget
-        """
         # Create the grid
         grid = QtWidgets.QGridLayout(self)
         self.setLayout(grid)
@@ -233,12 +233,12 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
 
     # Create empty widget
-    wdgtList = NzQAutoGridCheckboxes(maxColumnCount=7)
-    wdgtOdic = NzQAutoGridCheckboxes(maxRowCount=4)
+    wdgtList = NzQAutoGridCheckboxes()
+    wdgtOdic = NzQAutoGridCheckboxes()
 
     # Fill widget
-    wdgtList.createCheckboxes(textlist)
-    wdgtOdic.createCheckboxes(textodic)
+    wdgtList.createCheckboxes(textlist, maxColumnCount=7)
+    wdgtOdic.createCheckboxes(textodic, maxRowCount=4)
 
     wdgtList.show()
     wdgtOdic.show()

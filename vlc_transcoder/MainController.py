@@ -13,6 +13,7 @@ from PyQt5 import QtCore
 from NzPyQtToolBox.NzToolTipList import \
     TooltipedDataListModel as TooltipListModel
 from Controllers.ConfTabCtrl import ConfTabCtrl
+from Controllers.InputTabCtrl import InputTabCtrl
 
 # Import standard modules
 
@@ -38,11 +39,17 @@ class MainController():
         self.view.controller = self
 
         # Create dedicated controllers
-        try:
-            confTab = view.confTab
-            self.confTabCtrl = ConfTabCtrl(model, view.confTab)
-        except Exception as e:
-            raise e
+        self.confTabCtrl = ConfTabCtrl(model, view.confTab)
+        self.inputTabCtrl = InputTabCtrl(model, view.inputTab)
+
+    def initGUI(self):
+        """
+        Initialaze the whole GUI
+        """
+        # Connect models to views
+        self.connectModelAndView()
+        # Show GUI
+        self.view.show()
 
     def addRootDirectory(self, rootDir):
         """
@@ -50,8 +57,9 @@ class MainController():
         """
         self.model.addRootDirectory(rootDir)
 
-    def ConnectModelAndView(self):
+    def connectModelAndView(self):
         """
         Create models and connect them to the different views
         """
-        self.confTabCtrl.ConnectModelAndView()
+        self.confTabCtrl.connectModelAndView()
+        self.inputTabCtrl.connectModelAndView()

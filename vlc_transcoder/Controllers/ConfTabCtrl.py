@@ -32,7 +32,7 @@ class ConfTabCtrl():
         self.model = model
         self.view = view
 
-    def ConnectModelAndView(self):
+    def connectModelAndView(self):
         """
         Create models and connect them to the different views.
         """
@@ -72,4 +72,3 @@ class ConfTabCtrl():
         # Resize by width
         self.widthModel = QtCore.QStringListModel(self.model.vWidthList)
         self.view.byWidthCombo.setModel(self.widthModel)
-

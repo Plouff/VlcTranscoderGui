@@ -37,10 +37,13 @@ class TranscoderDirMgrWidget(DirectoryManagerWidget):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.parent = parent
 
     def DirectoryAddedProcessing(self, dir):
         """
         Define the processing of each new directory added
+
+        @param[in] dir The directory just added by the user
         """
         logging.info('Subprocess launched with directory: {}'.format(dir))
         # Set status "Scanning"

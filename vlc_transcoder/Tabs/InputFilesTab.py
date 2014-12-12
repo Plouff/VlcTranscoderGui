@@ -12,11 +12,8 @@ from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 # Import custom modules
-#from NzPyQtToolBox import NzQWidgets
 from NzPyQtToolBox.NzQAutoGridWidgets import NzQAutoGridCheckboxes
 from DirMgr.Widget import TranscoderDirMgrWidget
-from DirMgr.TModel import TranscoderDirMgrTableModel
-from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
 
 # Import standard modules
 import pprint
@@ -35,48 +32,26 @@ class InputFilesTab(QtWidgets.QWidget):
         super().__init__(parent)
         self.parent = parent
 
-        # Get the general model of the app
-        try:
-            self.model = self.parent.controller.model
-        except AttributeError as e:
-            raise RuntimeError("model is not set properly")
-        if self.model is None:
-            raise RuntimeError("model is not set properly")
-
         # Create the directory manager widget
-        extmgr = self.initExtMgr()
+        self.dirmgr = TranscoderDirMgrWidget(self)
 
         # Create the extensions manager widget
-        dirmgr = self.initDirMgr()
+        self.extmgr = NzQAutoGridCheckboxes(self)
 
         # Create the grid
         grid = QtWidgets.QGridLayout()
 
         # Add the video file extensions for the search
         # Add widgets to the grid
-        grid.addWidget(extmgr, 0, 0)
-        grid.addWidget(dirmgr, 1, 0)
+        grid.addWidget(self.extmgr, 0, 0)
+        grid.addWidget(self.dirmgr, 1, 0)
 
         self.setLayout(grid)
 
-    def initExtMgr(self):
-        extensions = self.model.videoFilexExt
-        extmgr = NzQAutoGridCheckboxes(extensions, maxColumnCount=8,
-                                       parent=self)
-        return extmgr
+    def getSelectedExtensions(self):
+        """
+        Get the list of extensions selected by the user
 
-    def initDirMgr(self):
-        # Create the directory widget
-        dirWidget = TranscoderDirMgrWidget()
-
-        # Create and set model to the widget and its table view
-        additionnalHeaders = ["Status", "Files"]
-        self.dirMgrModel = TranscoderDirMgrTableModel(
-            dirWidget.getTableView(), additionnalHeaders)
-        dirWidget.setModelToView(self.dirMgrModel)
-
-        # Create and set delegate to the widget
-        self.delegate = DirectoryManagerTableDelegate(dirWidget)
-        dirWidget.setItemDelegate(self.delegate)
-
-        return dirWidget
+        @return the unprocessed list of extensions
+        """
+        return self.extmgr.choices
