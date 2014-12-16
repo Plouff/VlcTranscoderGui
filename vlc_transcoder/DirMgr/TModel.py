@@ -65,18 +65,47 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
     #
     # CUSTOM METHODS
     #
-    def updateFileCount(self, dir, count):
-        #logging.debug(pformat(self._directoryData))
-        # Get column number for Files
-        filesCol = self._headers.index('File count')
-        # Get row number of current directory
-        dirRow = self.getDirectoryRow(dir)
-        logging.debug("dirRow {} - filesCol {}".format(dirRow, filesCol))
-        # Set new count of files
-        self._directoryData[dirRow][filesCol] = count
-        # Emit dataChanged for other views
-        index = self.index(dirRow, filesCol)
-        self.dataChanged.emit(index, index)
-
     def setStatus(self, dir, status):
+        """
+        Set the status column in the model.
+
+        @param[in] dir The directory row to be updated
+        @param[in] status The status to write
+        """
         self._setDataWithDirnHeader(dir, 'Status', status)
+
+    def setFileCount(self, dir, data):
+        """
+        Set the file count column in the model.
+
+        @param[in] dir The directory row to be updated
+        @param[in] data The data to write
+        """
+        self._setDataWithDirnHeader(dir, 'File count', data)
+
+    def setFiles(self, dir, data):
+        """
+        Set the files column in the model.
+
+        @param[in] dir The directory row to be updated
+        @param[in] data The data to write
+        """
+        self._setDataWithDirnHeader(dir, 'Files', data)
+
+    def appendFile(self, dir, data):
+        """
+        Append a file to list of files in the files column in the model.
+
+        @param[in] dir The directory row to be updated
+        @param[in] data The data to write
+        """
+        self._appendDataWithDirnHeader(dir, 'Files', data)
+
+    def setExtensions(self, dir, data):
+        """
+        Set the extension column in the model.
+
+        @param[in] dir The directory row to be updated
+        @param[in] data The data to write
+        """
+        self._setDataWithDirnHeader(dir, 'Extensions', data)

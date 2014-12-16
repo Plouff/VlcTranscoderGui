@@ -88,6 +88,7 @@ class MainController():
 
         # Set status "Scanning"
         self.model.dirMgrModel.setStatus(dir, "Scanning")
+        self.model.dirMgrModel.setExtensions(dir, extSelected.copy())
 
         try:
             for f in files:
@@ -95,7 +96,8 @@ class MainController():
                 logging.debug("File found: {}".format(f))
                 count += 1
                 # Update the model
-                self.model.dirMgrModel.updateFileCount(dir, count)
+                self.model.dirMgrModel.setFileCount(dir, count)
+                self.model.dirMgrModel.appendFile(dir, f)
         except Exception as e:
             # Set status "Scan Error"
             self.model.dirMgrModel.setStatus(dir, "Scan Error")

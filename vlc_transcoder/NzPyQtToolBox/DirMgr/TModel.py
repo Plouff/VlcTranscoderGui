@@ -132,6 +132,8 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             row = index.row()
             if column != self._butColumn:
                 value = self._directoryData[row][column]
+                if isinstance(value, list):
+                    value = ", ".join(value)
                 return value
 
     '''
@@ -338,7 +340,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         """
         for i, row in enumerate(self._directoryData):
             # Loop thru row in directory structure with the index i
-            logging.debug("Looking for {} in {}".format(dir, pformat(row)))
+            #logging.debug("Looking for {} in {}".format(dir, pformat(row)))
             if dir in row:
                 # Check if the directory is in the current row
                 return i
@@ -358,7 +360,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         """
         # Check that header exists
         try:
-            statusCol = self._headers.index(header)
+            col = self._headers.index(header)
         except:
             raise RuntimeError("Header '{}' doesn't exist in {}".format(
                 header, self._headers))
@@ -366,8 +368,43 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         dirRow = self.getDirectoryRow(dir)
 
         # Set new data
-        self._directoryData[dirRow][statusCol] = data
+        self._directoryData[dirRow][col] = data
 
         # Emit dataChanged
-        index = self.index(dirRow, statusCol)
+        index = self.index(dirRow, col)
+        self.dataChanged.emit(index, index)
+
+    def _appendDataWithDirnHeader(self, dir, header, data):
+        """
+        Append data to the cell found with a directory name and a header.
+
+        @param[in] dir The name of the directory row to set
+        @param[in] header The name of the header column to set
+        @param[in] data The name data to be appended
+        """
+        # Check that header exists
+        try:
+            col = self._headers.index(header)
+        except:
+            raise RuntimeError("Header '{}' doesn't exist in {}".format(
+                header, self._headers))
+        # Get directory row
+        dirRow = self.getDirectoryRow(dir)
+
+        # Set new data
+        curData = self._directoryData[dirRow][col]
+        logging.debug("curData: {}".format(curData))
+
+        if isinstance(curData, list):
+            newData = curData.append(data)
+        elif curData == '':
+            newData = [data]
+        else:
+            newData = [curData, data]
+
+        # Set new data
+        self._directoryData[dirRow][col] = newData
+
+        # Emit dataChanged
+        index = self.index(dirRow, col)
         self.dataChanged.emit(index, index)
