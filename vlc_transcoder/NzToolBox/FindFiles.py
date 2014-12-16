@@ -5,10 +5,15 @@
 Find files recrusively from a given root dir
 """
 
+# Import custom modules
+from NzPyQtToolBox.DebugTrace import qtDebugTrace
+
 # Import standard modules
 import os
 import fnmatch
 import sys
+import re
+import logging
 
 
 def findFiles(rootDir, patterns):
@@ -24,24 +29,72 @@ def findFiles(rootDir, patterns):
         The @c patterns must be a list of @c fnmatch supported patterns.
         @c fnmatch enables to use Unix like patterns, for example, "*.py"
     """
-    if not os.path.exists(rootDir):
+    if patterns == []:
+        # Check patterns list is not empty
+        raise RuntimeError("Pattern list is empty")
+    elif not os.path.exists(rootDir):
         # Check that rootDir exists
         raise RuntimeError("Directory doesn't exist: {}".format(rootDir))
-    if not os.path.isdir(rootDir):
+    elif not os.path.isdir(rootDir):
         # Check that rootDir is a directory
         raise RuntimeError("File is a not directory: {}".format(rootDir))
+    elif not os.access(rootDir, os.R_OK):
+        # Check that rootDir is readable
+        raise RuntimeWarning("No read access for directory {}".format(rootDir))
     else:
         if not isinstance(patterns, type([])):
             # Check that patterns is a list
             raise TypeError(
                 "In findFiles: 'patterns' argument must be a list. "
                 "You provided a '{}'".format(type(patterns).__name__))
+        # Look for files
+        logging.debug("Root: {} - patterns: {}".format(rootDir, patterns))
         for root, dirs, files in os.walk(rootDir):
             for basename in files:
                 for pattern in patterns:
                     if fnmatch.fnmatch(basename, pattern):
                         filename = os.path.join(root, basename)
                         yield filename
+
+
+def processInputExtensions(rawExtensions):
+    """
+    Format the input extensions to fit @c Findfiles format.
+
+    @param[in] rawExtensions A list of patterns to be processed
+
+    @return A list of extensions compliant with @c fnmatch
+    """
+    if rawExtensions == []:
+        # Check patterns list is not empty
+        raise RuntimeError("Pattern list is empty")
+        return []
+    else:
+        pat = re.compile(r'.*\*?\.(\w+)', re.IGNORECASE)
+        processedExt = []
+        for extStr in rawExtensions:
+            tmp = re.match(pat, extStr)
+            if tmp is None:
+                raise RuntimeError(
+                    "Unsupported extension raw string: {}".format(extStr))
+            else:
+                processedExt.append("*." + tmp.group(1))
+
+        logging.debug("Converted {} to {}".format(rawExtensions, processedExt))
+        return processedExt
+
+
+def findFilesbyExtension(rootDir, rawExtensions):
+    """
+    Find files matching a list of extensions.
+
+    @param[in] rootDir The root directory for the search
+    @param[in] rawExtensions The list of raw extensions
+    """
+    #qtDebugTrace()
+    processedExt = processInputExtensions(rawExtensions)
+
+    return findFiles(rootDir, processedExt)
 
 
 if __name__ == '__main__':

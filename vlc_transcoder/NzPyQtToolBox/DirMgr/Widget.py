@@ -76,7 +76,7 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
 
         # Connect directoryAdded to the method that will process the new
         # directory
-        self._model.directoryAdded.connect(self.DirectoryAddedProcessing)
+        self._model.directoryAdded.connect(self.directoryAddedProcessing)
 
     def getModel(self):
         """
@@ -156,7 +156,7 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
             logging.debug("Persisent editor created on row {}".format(
                 startRow + 1))
 
-    def DirectoryAddedProcessing(self, dir):
+    def directoryAddedProcessing(self, dir):
         """
         An abstract method (even if we don't use ABC module).
         This method needs to be implement in derived classes to process the

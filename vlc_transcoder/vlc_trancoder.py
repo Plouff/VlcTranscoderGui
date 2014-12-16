@@ -30,8 +30,8 @@ if __name__ == '__main__':
     import sys
 
     # Configure logger
-    #LoggingTools.initLogger(logging.DEBUG)
-    LoggingTools.initLogger(logging.INFO)
+    LoggingTools.initLogger(logging.DEBUG)
+    #LoggingTools.initLogger(logging.INFO)
 
     # Create the app
     app = QtWidgets.QApplication(sys.argv)

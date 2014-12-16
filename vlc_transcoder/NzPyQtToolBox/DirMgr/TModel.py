@@ -228,14 +228,6 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         """
         return self._dirColumn
 
-    def getDirectoryColumn(self):
-        """
-        Get the column of the directories
-
-        @return The colum number of the directories
-        """
-        return self._dirColumn
-
     def isLastRow(self, row):
         """
         Helper to check if a row index is the last one

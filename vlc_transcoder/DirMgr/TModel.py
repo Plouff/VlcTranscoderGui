@@ -68,7 +68,7 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
     def updateFileCount(self, dir, count):
         #logging.debug(pformat(self._directoryData))
         # Get column number for Files
-        filesCol = self._headers.index('Files')
+        filesCol = self._headers.index('File count')
         # Get row number of current directory
         dirRow = self.getDirectoryRow(dir)
         logging.debug("dirRow {} - filesCol {}".format(dirRow, filesCol))
@@ -78,11 +78,5 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
         index = self.index(dirRow, filesCol)
         self.dataChanged.emit(index, index)
 
-    def _setStatus(self, dir, status):
+    def setStatus(self, dir, status):
         self._setDataWithDirnHeader(dir, 'Status', status)
-
-    def setScanningStatus(self, dir):
-        self._setStatus(dir, "Scanning")
-
-    def setScannedStatus(self, dir):
-        self._setStatus(dir, "Scanned")

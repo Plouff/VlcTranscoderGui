@@ -15,7 +15,11 @@ from NzPyQtToolBox.NzToolTipList import \
 from Controllers.ConfTabCtrl import ConfTabCtrl
 from Controllers.InputTabCtrl import InputTabCtrl
 
+from NzToolBox.WholeToolBox import *
+from NzPyQtToolBox.DebugTrace import qtDebugTrace
+
 # Import standard modules
+import logging
 
 
 class MainController():
@@ -63,3 +67,39 @@ class MainController():
         """
         self.confTabCtrl.connectModelAndView()
         self.inputTabCtrl.connectModelAndView()
+
+    def processDirectory(self, dir):
+        """
+        Define the processing for new directories
+
+        @param[in] dir The directory just added by the user
+        """
+        # Get the list of extensions
+        extSelected = self.view.getSelectedExtensions()
+
+        logging.info(
+            'looking for files in directory "{}" with extensions {}'.format(
+                dir, extSelected))
+
+        # Get a generator to look for files
+        files = findFilesbyExtension(dir, extSelected)
+        #files = findFilesbyExtension(dir, ['*.log'])
+        count = 0
+
+        # Set status "Scanning"
+        self.model.dirMgrModel.setStatus(dir, "Scanning")
+
+        try:
+            for f in files:
+                # Find next file
+                logging.debug("File found: {}".format(f))
+                count += 1
+                # Update the model
+                self.model.dirMgrModel.updateFileCount(dir, count)
+        except Exception as e:
+            # Set status "Scan Error"
+            self.model.dirMgrModel.setStatus(dir, "Scan Error")
+            raise e
+
+        # Set status "Scanned"
+        self.model.dirMgrModel.setStatus(dir, "Scanned")

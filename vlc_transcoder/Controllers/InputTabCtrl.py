@@ -49,7 +49,7 @@ class InputTabCtrl():
         Build the Directory Manager Widget
         """
         # Create and set model to the widget and its table view
-        additionnalHeaders = ["Status", "Files"]
+        additionnalHeaders = ["Status", "Extensions", "File count", "Files"]
         self.model.dirMgrModel = TranscoderDirMgrTableModel(
             dirMgr.getTableView(), additionnalHeaders)
         dirMgr.setModelToView(self.model.dirMgrModel)
@@ -57,29 +57,3 @@ class InputTabCtrl():
         # Create and set delegate to the widget
         self.delegate = DirectoryManagerTableDelegate(dirMgr)
         dirMgr.setItemDelegate(self.delegate)
-
-    def processDirectory(self, dir):
-        """
-        Define the processing for new directories
-
-        @param[in] dir The directory just added by the user
-        """
-        # Get the list of extensions
-        extSelected = self.view.getSelectedExtensions()
-
-        logging.info('Subprocess launched with directory: {}'.format(dir))
-        # Set status "Scanning"
-        self._model.setScanningStatus(dir)
-
-        # Get a generator to look for files
-        files = findFiles(dir, ['*.log'])
-        count = 0
-        for f in files:
-            # Find next file
-            logging.debug(f)
-            count += 1
-            # Update the model
-            self._model.updateFileCount(dir, count)
-
-        # Set status "Scanned"
-        self._model.setScannedStatus(dir)

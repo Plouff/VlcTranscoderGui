@@ -16,6 +16,7 @@ from Tabs.ConfigurationTab import ConfigurationTab
 from Tabs.InputFilesTab import InputFilesTab
 
 # Import standard modules
+import logging
 
 
 class MainView(QtWidgets.QWidget):
@@ -70,3 +71,9 @@ class MainView(QtWidgets.QWidget):
         tabWidget.addTab(self.inputTab, "&Input files")
 
         return tabWidget
+
+    def getSelectedExtensions(self):
+        """
+        docstring for getSelectedExtensions
+        """
+        return self.inputTab.getSelectedExtensions()

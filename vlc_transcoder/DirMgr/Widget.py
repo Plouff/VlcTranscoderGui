@@ -18,7 +18,6 @@ from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
 
 from DirMgr.TModel import TranscoderDirMgrTableModel
 from NzPyQtToolBox.DebugTrace import qtDebugTrace
-from NzToolBox.WholeToolBox import *
 
 # Import custom modules
 import LoggingTools
@@ -39,28 +38,15 @@ class TranscoderDirMgrWidget(DirectoryManagerWidget):
         super().__init__(parent)
         self.parent = parent
 
-    def DirectoryAddedProcessing(self, dir):
+    def directoryAddedProcessing(self, dir):
         """
         Define the processing of each new directory added
 
         @param[in] dir The directory just added by the user
+
+        @todo Improve this ugly inteface...
         """
-        logging.info('Subprocess launched with directory: {}'.format(dir))
-        # Set status "Scanning"
-        self._model.setScanningStatus(dir)
-
-        # Get a generator to look for files
-        files = findFiles(dir, ['*.log'])
-        count = 0
-        for f in files:
-            # Find next file
-            logging.debug(f)
-            count += 1
-            # Update the model
-            self._model.updateFileCount(dir, count)
-
-        # Set status "Scanned"
-        self._model.setScannedStatus(dir)
+        self.parent.processDirectory(dir)
 
 if __name__ == '__main__':
     LoggingTools.initLogger(logging.INFO)

@@ -55,3 +55,13 @@ class InputFilesTab(QtWidgets.QWidget):
         @return the unprocessed list of extensions
         """
         return self.extmgr.choices
+
+    def processDirectory(self, dir):
+        """
+        Define the processing of each new directory added
+
+        @param[in] dir The directory just added by the user
+
+        @todo Improve this ugly inteface...
+        """
+        self.parent.controller.processDirectory(dir)
