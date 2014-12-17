@@ -28,12 +28,15 @@ def findFiles(rootDir, patterns):
     @par Usage:
         The @c patterns must be a list of @c fnmatch supported patterns.
         @c fnmatch enables to use Unix like patterns, for example, "*.py"
+
+     @bug <tt>os.access(rootDir, os.R_OK)</tt> doesn't work on Windows:
+         http://bugs.python.org/issue2528
     """
     if patterns == []:
         # Check patterns list is not empty
         raise RuntimeError("Pattern list is empty")
-    elif not os.path.exists(rootDir):
-        # Check that rootDir exists
+    elif not os.access(rootDir, os.X_OK):
+        # Check that rootDir exists (can't use os.exists since os.stat fails)
         raise RuntimeError("Directory doesn't exist: {}".format(rootDir))
     elif not os.path.isdir(rootDir):
         # Check that rootDir is a directory

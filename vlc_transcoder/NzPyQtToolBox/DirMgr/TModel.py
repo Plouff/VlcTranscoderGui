@@ -117,10 +117,11 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
                     dir = self._directoryData[row][self._dirColumn]
                     return "Remove directory: {}".format(dir)
 
-            elif column == self._dirColumn:
-                # On directory column return the name of the dir
-                dir = self._directoryData[row][column]
-                return dir
+            else:
+                # For other cells display the content of the cell
+                data = self._directoryData[row][column]
+                data = self.stringConverter(data)
+                return data
 
         #if role == QtCore.Qt.DecorationRole:
             #row = index.row()
@@ -132,8 +133,8 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             row = index.row()
             if column != self._butColumn:
                 value = self._directoryData[row][column]
-                if isinstance(value, list):
-                    value = ", ".join(value)
+                # If the data is a list then we convert it into a string
+                value = self.stringConverter(value)
                 return value
 
     '''
@@ -157,7 +158,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             msg = msg + "only has {} rows".format(self.rowCount())
             warnings.warn(msg, RuntimeWarning)
             return False
-        if row < 0:
+        elif row < 0:
             # Check that row is not inserted at an index < 0
             raise RuntimeError("Can't insert row at position {}".format(row))
             return False
@@ -221,14 +222,6 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         @param[in] delegate The delegate of the corresponding table view
         """
         self._delegate = delegate
-
-    def getDirectoryColumn(self):
-        """
-        Get the column of the directories
-
-        @return The colum number of the directories
-        """
-        return self._dirColumn
 
     def isLastRow(self, row):
         """
@@ -349,6 +342,36 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             raise RuntimeError("Can't find dir {} in list of dirs\n{}".format(
                 dir, pformat(self._directoryData)))
             return -1
+
+    def getColumByHeader(self, name):
+        """
+        Get the column number of a given header.
+
+        @param[in] name The name of the column
+
+        @return a positive @c int if successful or @c -1 otherwise
+        """
+        try:
+            return self._headers.index(name)
+        except:
+            raise RuntimeError("Can't find column header: '{}''".format(name))
+            return -1
+
+    def stringConverter(self, data):
+        """
+        Convert the data into a string if necessary.
+
+        If a cell holds something else than a string then it can't be displayed
+        directly. So we need to convert the data into a string.
+        At the moment only @c list are supported.
+
+        @param[in] data The data to be displayed
+
+        @return a @c string
+        """
+        if isinstance(data, list):
+            data = ", ".join(data)
+        return data
 
     def _setDataWithDirnHeader(self, dir, header, data):
         """

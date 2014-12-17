@@ -49,18 +49,16 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
         else:
             return QtCore.Qt.ItemIsEnabled
 
-    #def data(self, index, role):
-        ##
-        ## TODO Debug this....
-        ##
-        #if role == QtCore.Qt.TextAlignmentRole:
-            #statusCol = self._headers.index('Status')
-            #filesCol = self._headers.index('Files')
-            #column = index.column()
-            #if column == statusCol or column == filesCol:
-                #return QtCore.Qt.AlignCenter
-        #else:
-            #super().data(index, role)
+    def data(self, index, role):
+        if role == QtCore.Qt.TextAlignmentRole:
+            pass
+            statusCol = self.getColumByHeader('Status')
+            filesCountCol = self.getColumByHeader('File count')
+            column = index.column()
+            if column == statusCol or column == filesCountCol:
+                return QtCore.Qt.AlignCenter
+        else:
+            return super().data(index, role)
 
     #
     # CUSTOM METHODS
@@ -109,3 +107,12 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
         @param[in] data The data to write
         """
         self._setDataWithDirnHeader(dir, 'Extensions', data)
+
+    def setError(self, dir, data):
+        """
+        Set the extension column in the model.
+
+        @param[in] dir The directory row to be updated
+        @param[in] data The data to write
+        """
+        self._setDataWithDirnHeader(dir, 'Error', data)

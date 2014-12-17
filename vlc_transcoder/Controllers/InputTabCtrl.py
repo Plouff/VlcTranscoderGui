@@ -49,7 +49,8 @@ class InputTabCtrl():
         Build the Directory Manager Widget
         """
         # Create and set model to the widget and its table view
-        additionnalHeaders = ["Status", "Extensions", "File count", "Files"]
+        additionnalHeaders = ["Status", "Extensions", "File count", "Files",
+                              "Error"]
         self.model.dirMgrModel = TranscoderDirMgrTableModel(
             dirMgr.getTableView(), additionnalHeaders)
         dirMgr.setModelToView(self.model.dirMgrModel)

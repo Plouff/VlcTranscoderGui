@@ -81,26 +81,28 @@ class MainController():
             'looking for files in directory "{}" with extensions {}'.format(
                 dir, extSelected))
 
-        # Get a generator to look for files
-        files = findFilesbyExtension(dir, extSelected)
-        #files = findFilesbyExtension(dir, ['*.log'])
-        count = 0
-
         # Set status "Scanning"
         self.model.dirMgrModel.setStatus(dir, "Scanning")
         self.model.dirMgrModel.setExtensions(dir, extSelected.copy())
 
         try:
-            for f in files:
+            # Get a generator to look for files
+            files = findFilesbyExtension(dir, extSelected)
+            #files = findFilesbyExtension(dir, ['*.log'])
+            for count, f in enumerate(files):
                 # Find next file
                 logging.debug("File found: {}".format(f))
                 count += 1
                 # Update the model
                 self.model.dirMgrModel.setFileCount(dir, count)
                 self.model.dirMgrModel.appendFile(dir, f)
+            else:
+                # If no file is found
+                self.model.dirMgrModel.setFileCount(dir, 0)
         except Exception as e:
             # Set status "Scan Error"
             self.model.dirMgrModel.setStatus(dir, "Scan Error")
+            self.model.dirMgrModel.setError(dir, str(e))
             raise e
 
         # Set status "Scanned"
