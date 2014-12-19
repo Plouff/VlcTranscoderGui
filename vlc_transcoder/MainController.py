@@ -17,6 +17,9 @@ from Controllers.InputTabCtrl import InputTabCtrl
 
 from NzToolBox.WholeToolBox import *
 from NzPyQtToolBox.DebugTrace import qtDebugTrace
+from NzPyQtToolBox.Threading import sendWorkerOnThread
+from Workers.DirWorker import DirWorker
+from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
 # Import standard modules
 import logging
@@ -74,36 +77,18 @@ class MainController():
 
         @param[in] dir The directory just added by the user
         """
+        # Create scan thread
+        self.scanthread = QtCore.QThread()
+
         # Get the list of extensions
         extSelected = self.view.getSelectedExtensions()
 
-        logging.info(
-            'looking for files in directory "{}" with extensions {}'.format(
-                dir, extSelected))
+        # Create a directory worker
+        dirworker = DirWorker(dir, extSelected, self.model.dirMgrModel)
 
-        # Set status "Scanning"
-        self.model.dirMgrModel.setStatus(dir, "Scanning")
-        self.model.dirMgrModel.setExtensions(dir, extSelected.copy())
+        # Send worker
+        #qtDebugTrace()
+        sendWorkerOnThread(dirworker, self.scanthread, self.raiseThreadError)
 
-        try:
-            # Get a generator to look for files
-            files = findFilesbyExtension(dir, extSelected)
-            #files = findFilesbyExtension(dir, ['*.log'])
-            for count, f in enumerate(files):
-                # Find next file
-                logging.debug("File found: {}".format(f))
-                count += 1
-                # Update the model
-                self.model.dirMgrModel.setFileCount(dir, count)
-                self.model.dirMgrModel.appendFile(dir, f)
-            else:
-                # If no file is found
-                self.model.dirMgrModel.setFileCount(dir, 0)
-        except Exception as e:
-            # Set status "Scan Error"
-            self.model.dirMgrModel.setStatus(dir, "Scan Error")
-            self.model.dirMgrModel.setError(dir, str(e))
-            raise e
-
-        # Set status "Scanned"
-        self.model.dirMgrModel.setStatus(dir, "Scanned")
+    def raiseThreadError(self, msg):
+        raise RuntimeError("Thread Error: {}".format(msg))

@@ -43,7 +43,7 @@ def findFiles(rootDir, patterns):
         raise RuntimeError("File is a not directory: {}".format(rootDir))
     elif not os.access(rootDir, os.R_OK):
         # Check that rootDir is readable
-        raise RuntimeWarning("No read access for directory {}".format(rootDir))
+        raise RuntimeError("No read access for directory {}".format(rootDir))
     else:
         if not isinstance(patterns, type([])):
             # Check that patterns is a list
