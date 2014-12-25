@@ -36,7 +36,5 @@ def initLogger(level=logging.DEBUG):
             level=level)
     else:
         # Display less stuff for info mode
-        logging.basicConfig(
-            format='%(levelname)s: %(message)s',
-            level=level)
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=level)
 

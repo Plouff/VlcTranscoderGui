@@ -8,17 +8,13 @@ The table model for the Transcoder extension of the Directory Manager Widget
 
 # Import PyQt
 from PyQt5 import QtCore
-from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 
 # Import custom PyQt modules
 from NzPyQtToolBox.DirMgr.TModel import DirectoryManagerTableModel
 from DebugTrace import qtDebugTrace
 
 # Import standard modules
-import sys
 import logging
-import warnings
 from pprint import pprint, pformat
 
 
@@ -63,56 +59,56 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
     #
     # CUSTOM METHODS
     #
-    def setStatus(self, dir, status):
+    def setStatus(self, dirpath, status):
         """
         Set the status column in the model.
 
-        @param[in] dir The directory row to be updated
+        @param[in] dirpath The directory row to be updated
         @param[in] status The status to write
         """
-        self._setDataWithDirnHeader(dir, 'Status', status)
+        self._setDataWithDirnHeader(dirpath, 'Status', status)
 
-    def setFileCount(self, dir, data):
+    def setFileCount(self, dirpath, data):
         """
         Set the file count column in the model.
 
-        @param[in] dir The directory row to be updated
+        @param[in] dirpath The directory row to be updated
         @param[in] data The data to write
         """
-        self._setDataWithDirnHeader(dir, 'File count', data)
+        self._setDataWithDirnHeader(dirpath, 'File count', data)
 
-    def setFiles(self, dir, data):
+    def setFiles(self, dirpath, data):
         """
         Set the files column in the model.
 
-        @param[in] dir The directory row to be updated
+        @param[in] dirpath The directory row to be updated
         @param[in] data The data to write
         """
-        self._setDataWithDirnHeader(dir, 'Files', data)
+        self._setDataWithDirnHeader(dirpath, 'Files', data)
 
-    def appendFile(self, dir, data):
+    def appendFile(self, dirpath, data):
         """
         Append a file to list of files in the files column in the model.
 
-        @param[in] dir The directory row to be updated
+        @param[in] dirpath The directory row to be updated
         @param[in] data The data to write
         """
-        self._appendDataWithDirnHeader(dir, 'Files', data)
+        self._appendDataWithDirnHeader(dirpath, 'Files', data)
 
-    def setExtensions(self, dir, data):
+    def setExtensions(self, dirpath, data):
         """
         Set the extension column in the model.
 
-        @param[in] dir The directory row to be updated
+        @param[in] dirpath The directory row to be updated
         @param[in] data The data to write
         """
-        self._setDataWithDirnHeader(dir, 'Extensions', data)
+        self._setDataWithDirnHeader(dirpath, 'Extensions', data)
 
-    def setError(self, dir, data):
+    def setError(self, dirpath, data):
         """
         Set the extension column in the model.
 
-        @param[in] dir The directory row to be updated
+        @param[in] dirpath The directory row to be updated
         @param[in] data The data to write
         """
-        self._setDataWithDirnHeader(dir, 'Error', data)
+        self._setDataWithDirnHeader(dirpath, 'Error', data)

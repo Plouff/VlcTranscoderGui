@@ -2,15 +2,15 @@
 #-*-coding: utf-8 -*-
 
 """
-@file DirWorker.py
+@file DirRunner.py
 The worker for the threaded management of directories
 """
 
 # Import PyQt modules
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal
 
 # Import custom modules
-from NzPyQtToolBox.Threading import Worker
 from NzToolBox.FindFiles import findFilesbyExtension
 from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
@@ -18,10 +18,12 @@ from NzPyQtToolBox.DebugTrace import qtDebugTrace
 import logging
 
 
-class DirWorker(Worker):
+class DirRunnable(QtCore.QRunnable):
     """
     The worker for the threaded management of directories
     """
+    errorStr = pyqtSignal(str)
+
     def __init__(self, rootDir, extensions, dirMgrModel):
         """
         docstring for __init__
@@ -38,7 +40,7 @@ class DirWorker(Worker):
         )
         return msg
 
-    def process(self):
+    def run(self):
         """
         Specific implementation of the process function
         """
@@ -66,7 +68,7 @@ class DirWorker(Worker):
             # Set status "Scan Error"
             self.dirMgrModel.setStatus(self.rootDir, "Scan Error")
             self.dirMgrModel.setError(self.rootDir, str(e))
-            self.errorStr.emit(str(e))
+            #self.errorStr.emit(str(e))
             raise e
 
         # Set status "Scanned"
@@ -75,7 +77,6 @@ class DirWorker(Worker):
         logging.info(
             'End of threaded processing of "{}"'.format(self.rootDir))
 
-        super().process()
 
     def printFinished(self):
         """

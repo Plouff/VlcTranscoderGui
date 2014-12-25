@@ -10,19 +10,14 @@ The Controller for the transcoder
 from PyQt5 import QtCore
 
 # Import custom modules
-from NzPyQtToolBox.NzToolTipList import \
-    TooltipedDataListModel as TooltipListModel
+
 from Controllers.ConfTabCtrl import ConfTabCtrl
 from Controllers.InputTabCtrl import InputTabCtrl
 
-from NzToolBox.WholeToolBox import *
 from NzPyQtToolBox.DebugTrace import qtDebugTrace
-from NzPyQtToolBox.Threading import sendWorkerOnThread
-from Workers.DirWorker import DirWorker
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
+from Workers.DirRunnable import DirRunnable
 
 # Import standard modules
-import logging
 
 
 class MainController():
@@ -48,6 +43,8 @@ class MainController():
         # Create dedicated controllers
         self.confTabCtrl = ConfTabCtrl(model, view.confTab)
         self.inputTabCtrl = InputTabCtrl(model, view.inputTab)
+        self.pool = QtCore.QThreadPool()
+        self.pool.setMaxThreadCount(3)
 
     def initGUI(self):
         """
@@ -71,24 +68,24 @@ class MainController():
         self.confTabCtrl.connectModelAndView()
         self.inputTabCtrl.connectModelAndView()
 
-    def processDirectory(self, dir):
+    def processDirectory(self, dirpath):
         """
         Define the processing for new directories
 
-        @param[in] dir The directory just added by the user
+        @param[in] dirpath The directory just added by the user
         """
-        # Create scan thread
-        self.scanthread = QtCore.QThread()
-
         # Get the list of extensions
         extSelected = self.view.getSelectedExtensions()
 
         # Create a directory worker
-        dirworker = DirWorker(dir, extSelected, self.model.dirMgrModel)
+        dirrunnable = DirRunnable(dirpath, extSelected, self.model.dirMgrModel)
 
-        # Send worker
+        # Set waiting status
+        self.model.dirMgrModel.setStatus(dirpath, "Waiting")
+
+        # Send worker to thread pool
         #qtDebugTrace()
-        sendWorkerOnThread(dirworker, self.scanthread, self.raiseThreadError)
+        self.pool.start(dirrunnable)
 
     def raiseThreadError(self, msg):
         raise RuntimeError("Thread Error: {}".format(msg))

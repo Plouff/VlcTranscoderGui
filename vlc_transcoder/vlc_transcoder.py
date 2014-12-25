@@ -2,7 +2,7 @@
 #-*-coding: utf-8 -*-
 
 """
-@file vlc_trancoder.py
+@file vlc_transcoder.py
 VLC Transcoder GUI
 
 A GUI to transcode videos with VLC

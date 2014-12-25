@@ -369,15 +369,16 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
 
         @return a @c string
         """
-        if isinstance(data, list):
-            data = ", ".join(data)
+        if data is not None:
+            if isinstance(data, list):
+                data = ", ".join(data)
         return data
 
-    def _setDataWithDirnHeader(self, dir, header, data):
+    def _setDataWithDirnHeader(self, dirpath, header, data):
         """
         Set data to the cell found with a directory name and a header.
 
-        @param[in] dir The name of the directory row to set
+        @param[in] dirpath The name of the directory row to set
         @param[in] header The name of the header column to set
         @param[in] data The name data to set
         """
@@ -388,7 +389,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             raise RuntimeError("Header '{}' doesn't exist in {}".format(
                 header, self._headers))
         # Get directory row
-        dirRow = self.getDirectoryRow(dir)
+        dirRow = self.getDirectoryRow(dirpath)
 
         # Set new data
         self._directoryData[dirRow][col] = data
@@ -397,11 +398,11 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         index = self.index(dirRow, col)
         self.dataChanged.emit(index, index)
 
-    def _appendDataWithDirnHeader(self, dir, header, data):
+    def _appendDataWithDirnHeader(self, dirpath, header, data):
         """
         Append data to the cell found with a directory name and a header.
 
-        @param[in] dir The name of the directory row to set
+        @param[in] dirpath The name of the directory row to set
         @param[in] header The name of the header column to set
         @param[in] data The name data to be appended
         """
@@ -412,7 +413,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             raise RuntimeError("Header '{}' doesn't exist in {}".format(
                 header, self._headers))
         # Get directory row
-        dirRow = self.getDirectoryRow(dir)
+        dirRow = self.getDirectoryRow(dirpath)
 
         # Set new data
         curData = self._directoryData[dirRow][col]

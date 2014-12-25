@@ -56,12 +56,12 @@ class InputFilesTab(QtWidgets.QWidget):
         """
         return self.extmgr.choices
 
-    def processDirectory(self, dir):
+    def processDirectory(self, dirpath):
         """
         Define the processing of each new directory added
 
-        @param[in] dir The directory just added by the user
+        @param[in] dirpath The directory just added by the user
 
         @todo Improve this ugly inteface...
         """
-        self.parent.controller.processDirectory(dir)
+        self.parent.controller.processDirectory(dirpath)

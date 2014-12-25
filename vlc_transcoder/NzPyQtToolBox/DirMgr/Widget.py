@@ -15,7 +15,7 @@ from PyQt5 import QtGui
 from NzPyQtToolBox.DirMgr.TModel import DirectoryManagerTableModel
 from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
 from DebugTrace import qtDebugTrace
-from WholeToolBox import *
+
 
 # Import custom modules
 

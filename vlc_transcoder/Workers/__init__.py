@@ -7,8 +7,8 @@ Workers for multithreading operations
 
 """
 @package Workers
-Workers for multithreading operations
+Runners for multithreading operations
 """
 
 # List of modules
-__all__ = ['DirWorkers.py']
+__all__ = ['DirRunnable.py']

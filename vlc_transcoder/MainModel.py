@@ -118,6 +118,8 @@ class MainModel():
             ('.mov',  'Apple QuickTime Movie'),
             ('.mp4',  'MPEG-4 Video File'),
             ('.mpg',  'MPEG Video File'),
+            ('.mts',  'MPEG Transport Stream'),
+            ('.ts',  'MPEG Transport Stream'),
             ('.rm ',  'Real Media File'),
             ('.swf',  'Shockwave Flash Movie'),
             ('.vob',  'DVD Video Object File'),
