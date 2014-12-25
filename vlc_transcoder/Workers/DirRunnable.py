@@ -17,12 +17,20 @@ from NzPyQtToolBox.DebugTrace import qtDebugTrace
 # Import standard modules
 import logging
 
+class DirRunnableSignals(QtCore.QObject):
+    """
+    Signals for the directory worker
+    """
+    updateStatus = pyqtSignal(str, str)
+    updateExt = pyqtSignal(str, list)
+    updateCount = pyqtSignal(str, int)
+    appendFile = pyqtSignal(str, str)
+    updateError = pyqtSignal(str, str)
 
 class DirRunnable(QtCore.QRunnable):
     """
     The worker for the threaded management of directories
     """
-    errorStr = pyqtSignal(str)
 
     def __init__(self, rootDir, extensions, dirMgrModel):
         """
@@ -31,6 +39,15 @@ class DirRunnable(QtCore.QRunnable):
         self.rootDir = rootDir
         self.extensions = extensions
         self.dirMgrModel = dirMgrModel
+
+        # Connect runner to model
+        self.signal = DirRunnableSignals()
+        self.signal.updateStatus.connect(self.dirMgrModel.setStatus)
+        self.signal.updateExt.connect(self.dirMgrModel.setExtensions)
+        self.signal.updateCount.connect(self.dirMgrModel.setFileCount)
+        self.signal.appendFile.connect(self.dirMgrModel.appendFile)
+        self.signal.updateError.connect(self.dirMgrModel.setError)
+
         super().__init__()
 
     def __repr__(self):
@@ -50,29 +67,28 @@ class DirRunnable(QtCore.QRunnable):
                 self.rootDir, self.extensions))
 
         # Set status "Scanning"
-        self.dirMgrModel.setStatus(self.rootDir, "Scanning")
-        self.dirMgrModel.setExtensions(self.rootDir, self.extensions.copy())
+        self.signal.updateStatus.emit(self.rootDir, "Scanning")
+        self.signal.updateExt.emit(self.rootDir, self.extensions.copy())
 
         try:
             # Get a generator to look for files
             files = findFilesbyExtension(self.rootDir, self.extensions)
             #files = findFilesbyExtension(self.rootDir, ['*.log'])
-            self.dirMgrModel.setFileCount(self.rootDir, 0)
+            self.signal.updateCount.emit(self.rootDir, 0)
             for count, f in enumerate(files):
                 # Find next file
                 logging.debug("File found: {}".format(f))
                 # Update the model
-                self.dirMgrModel.setFileCount(self.rootDir, count + 1)
-                self.dirMgrModel.appendFile(self.rootDir, f)
+                self.signal.updateCount.emit(self.rootDir, count + 1)
+                self.signal.appendFile.emit(self.rootDir, f)
         except Exception as e:
             # Set status "Scan Error"
-            self.dirMgrModel.setStatus(self.rootDir, "Scan Error")
-            self.dirMgrModel.setError(self.rootDir, str(e))
-            #self.errorStr.emit(str(e))
+            self.signal.updateStatus.emit(self.rootDir, "Scan Error")
+            self.signal.updateError.emit(self.rootDir, str(e))
             raise e
 
         # Set status "Scanned"
-        self.dirMgrModel.setStatus(self.rootDir, "Scanned")
+        self.signal.updateStatus.emit(self.rootDir, "Scanned")
 
         logging.info(
             'End of threaded processing of "{}"'.format(self.rootDir))

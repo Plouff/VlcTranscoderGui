@@ -15,7 +15,6 @@ from PyQt5 import QtGui
 from DebugTrace import qtDebugTrace
 
 # Import standard modules
-import sys
 import logging
 import warnings
 from pprint import pprint, pformat
@@ -114,8 +113,8 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
                     return "Add new directory"
                 else:
                     # else it's a - button
-                    dir = self._directoryData[row][self._dirColumn]
-                    return "Remove directory: {}".format(dir)
+                    dirpath = self._directoryData[row][self._dirColumn]
+                    return "Remove directory: {}".format(dirpath)
 
             else:
                 # For other cells display the content of the cell
@@ -192,7 +191,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             # Mandatory call of beginInsertRows
             self.beginRemoveRows(parent, row, row)
             # Remove row from directory data structure
-            dir = self._directoryData.pop(row)
+            dirpath = self._directoryData.pop(row)
             # Ask delegate to remove the button from the list of buttons
             self._delegate.removeButton(row)
 
@@ -203,7 +202,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
 
             # Mandatory call of endRemoveRows
             self.endRemoveRows()
-            logging.info("Removed dir: {}".format(dir[1]))
+            logging.info("Removed dirpath: {}".format(dirpath[1]))
             return True
 
     def removeRows(self, position, rows, parent=QtCore.QModelIndex()):
@@ -307,7 +306,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             # Emit dataChanged
             startIndex = self.index(row, self._dirColumn)
             logging.debug("emitted row {}".format(row))
-            endIndex = self.index(row + 1, self.columnCount())
+            # endIndex = self.index(row + 1, self.columnCount())
             self.dataChanged.emit(startIndex, startIndex)
 
             # Emit newButtonCreated with indexes of the changed area
@@ -321,26 +320,26 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
 
         return False
 
-    def getDirectoryRow(self, dir):
+    def getDirectoryRow(self, dirpath):
         """
         Get the row of a given directory. If the directory can't be found a
         @c RuntimeError is raised.
 
-        @param[in] dir The name of the directory to look for
+        @param[in] dirpath The name of the directory to look for
 
         @return The row corresponding to the directory or @c -1 in case of
         error
         """
         for i, row in enumerate(self._directoryData):
             # Loop thru row in directory structure with the index i
-            #logging.debug("Looking for {} in {}".format(dir, pformat(row)))
-            if dir in row:
+            #logging.debug("Looking for {} in {}".format(dirpath, pformat(row)))
+            if dirpath in row:
                 # Check if the directory is in the current row
                 return i
         else:
             # If the directory can't be raise a RuntimeError
-            raise RuntimeError("Can't find dir {} in list of dirs\n{}".format(
-                dir, pformat(self._directoryData)))
+            raise RuntimeError("Can't find dirpath {} in list of dirs\n{}".format(
+                dirpath, pformat(self._directoryData)))
             return -1
 
     def getColumByHeader(self, name):
@@ -371,7 +370,10 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         """
         if data is not None:
             if isinstance(data, list):
-                data = ", ".join(data)
+                try:
+                    data = ", ".join(data)
+                except Exception as e:
+                    raise e
         return data
 
     def _setDataWithDirnHeader(self, dirpath, header, data):
@@ -420,11 +422,10 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         logging.debug("curData: {}".format(curData))
 
         if isinstance(curData, list):
-            newData = curData.append(data)
-        elif curData == '':
-            newData = [data]
+            curData.append(data)
+            newData = curData
         else:
-            newData = [curData, data]
+            newData = [data]
 
         # Set new data
         self._directoryData[dirRow][col] = newData
