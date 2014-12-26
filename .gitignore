@@ -10,3 +10,5 @@ __pycache__/
 
 # Other
 General_snippets/
+org.eclipse.core.resources.prefs
+.pydevproject
