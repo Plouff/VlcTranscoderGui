@@ -34,12 +34,16 @@ class TranscoderMgrWidget(QtWidgets.QWidget):
         self.table.setModel(self.model)
         # Create progress bar
         self.progBar = QtWidgets.QProgressBar(self)
+        self.progBar.setMinimum(0)
+        self.progBar.setMaximum(100)
+        self.progBar.setValue(0)
 
         # Define layout
         grid = QtWidgets.QGridLayout()
         grid.addWidget(self.table, 0, 0)
         grid.addWidget(self.progBar, 1, 0)
         self.setLayout(grid)
+        self.setContentsMargins(0, 0, 0, 0)
 
         # Connect the update progress signal from the model
         self.model.updateProgress.connect(self.updateProgress)
@@ -58,22 +62,28 @@ class TranscoderMgrWidget(QtWidgets.QWidget):
 
         @param prog: The value to update
         """
+        logging.debug("Update progress: {}%".format(prog))
         self.progBar.setValue(prog)
 
 if __name__ == '__main__':
     import sys
     from random import Random
+    from PyQt5.QtCore import QTimer
 
-    LoggingTools.initLogger(logging.INFO)
-    # LoggingTools.initLogger(logging.DEBUG)
+    # LoggingTools.initLogger(logging.INFO)
+    LoggingTools.initLogger(logging.DEBUG)
     app = QtWidgets.QApplication(sys.argv)
 
     # Create the directory widget
     transcWidget = TranscoderMgrWidget()
 
+    # Create random number generator
     randGen = Random()
 
-    for i in range(30):
+    # Set number of row in the table
+    rows = 120
+
+    for i in range(rows):
         num = randGen.randint(0, 999999999)
         transcWidget.appendFile(num)
 
@@ -81,4 +91,11 @@ if __name__ == '__main__':
     transcWidget.setGeometry(500, 100, 600, 600)
     transcWidget.show()
     transcWidget.raise_()
+
+    # Randomly change status
+    timer = QTimer()
+    for i in range(rows*2):
+        row = randGen.randint(0, rows - 1)
+        transcWidget.model.DEBUGsetStatus(row, 'Done')
+
     sys.exit(app.exec_())

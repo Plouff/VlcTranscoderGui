@@ -150,6 +150,15 @@ class TModel(QtCore.QAbstractTableModel):
     def setStatus(self, file, status):
         row = self.getFileRow(file)
         self._filesdata[row][1] = status
+        index = self.index(row, 1)
+        self.dataChanged.emit(index, index)
+        self.computeUpdateProgress()
+
+    def DEBUGsetStatus(self, row, status):
+        self._filesdata[row][1] = status
+        index = self.index(row, 1)
+        self.dataChanged.emit(index, index)
+        self.computeUpdateProgress()
 
     def computeUpdateProgress(self):
         """
@@ -161,7 +170,9 @@ class TModel(QtCore.QAbstractTableModel):
             if row[1] == 'Waiting':
                 waitCount = waitCount + 1
 
-        prog = waitCount / self.rowCount()
-        prog = int(prog)
+        prog = 1 - (waitCount / self.rowCount())
+        prog = int(prog * 100)
+
+        logging.debug("new progress: {}%".format(prog))
 
         self.updateProgress.emit(prog)

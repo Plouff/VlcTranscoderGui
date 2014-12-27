@@ -38,15 +38,21 @@ class TranscoderDirMgrWidget(DirectoryManagerWidget):
         super().__init__(parent)
         self.parent = parent
 
-    def directoryAddedProcessing(self, dir):
+    def directoryAddedProcessing(self, dirpath):
         """
         Define the processing of each new directory added
 
-        @param[in] dir The directory just added by the user
+        @param[in] dirpath The directory just added by the user
 
         @todo Improve this ugly inteface...
         """
-        self.parent.processDirectory(dir)
+        self.parent.processDirectory(dirpath)
+
+    def getFiles(self):
+        """
+        Get the list of files found diring the processing
+        """
+        pass
 
 if __name__ == '__main__':
     LoggingTools.initLogger(logging.INFO)

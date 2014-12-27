@@ -9,14 +9,13 @@ The View of the transcoder GUI
 # Import PyQt modules
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
-from PyQt5 import QtCore
 
 # Import custom modules
 from Tabs.ConfigurationTab import ConfigurationTab
 from Tabs.InputFilesTab import InputFilesTab
+from Tabs.TranscodeTab import TranscodeTab
 
 # Import standard modules
-import logging
 
 
 class MainView(QtWidgets.QWidget):
@@ -66,9 +65,12 @@ class MainView(QtWidgets.QWidget):
         self.confTab = ConfigurationTab(self)
         # Create the input files tab
         self.inputTab = InputFilesTab(self)
+        # Create the transcode tab
+        self.transcodeTab = TranscodeTab(self)
 
         tabWidget.addTab(self.confTab, "&Output Configuration")
         tabWidget.addTab(self.inputTab, "&Input files")
+        tabWidget.addTab(self.transcodeTab, "&Transcoding")
 
         return tabWidget
 

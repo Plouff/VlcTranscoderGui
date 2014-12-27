@@ -56,6 +56,14 @@ class InputFilesTab(QtWidgets.QWidget):
         """
         return self.extmgr.choices
 
+    def getFiles(self):
+        """
+        Get the list of files
+
+        @return the list of files
+        """
+        return self.dirmgr.getFiles()
+
     def processDirectory(self, dirpath):
         """
         Define the processing of each new directory added
