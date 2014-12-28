@@ -47,7 +47,7 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
         model = self.getModel()
         delegate = self.getDelegate()
         tableview = self.getTableView()
-        msg = ("{}@{}(_tableView={!r}@{}, _model={!r}, _delegate={!r}".format(
+        msg = ("{}@{}(_tableView={!r}@{}, model={!r}, _delegate={!r}".format(
             self.__class__.__name__, hex(id(self)),
             tableview.__class__.__name__, hex(id(tableview)), model, delegate)
         )
@@ -65,18 +65,18 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
             raise RuntimeError(("Model assigned to this widget must inherit "
                                 "from DirectoryManagerTableModel. Got type "
                                 "{}".format(model.__class__.__name__)))
-        self._model = model
+        self.model = model
         # Qt setModel
-        self._tableView.setModel(self._model)
+        self._tableView.setModel(self.model)
 
         # Connect newButtonCreated to a method that will create the button on
         # the next row
-        self._model.newButtonCreated.connect(
+        self.model.newButtonCreated.connect(
             self.createPersistentEditorOnNextRow)
 
         # Connect directoryAdded to the method that will process the new
         # directory
-        self._model.directoryAdded.connect(self.directoryAddedProcessing)
+        self.model.directoryAdded.connect(self.directoryAddedProcessing)
 
     def getModel(self):
         """
@@ -84,10 +84,10 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
 
         @return The model in use
         """
-        if not self._model:
+        if not self.model:
             raise RuntimeError(("No model set to the widget. You must use "
                                 "method setModelToView to set it up"))
-        return self._model
+        return self.model
 
     def getTableView(self):
         """
@@ -121,12 +121,12 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
         # Qt setItemDelegate
         self._tableView.setItemDelegate(delegate)
         # Custom setItemDelegate
-        self._model.setDelegate(delegate)
+        self.model.setDelegate(delegate)
 
         # Create +/- intial buttons
-        for row in range(self._model.rowCount(self)):
+        for row in range(self.model.rowCount(self)):
             self._tableView.openPersistentEditor(
-                self._model.index(row, self.ctrlButCol))
+                self.model.index(row, self.ctrlButCol))
 
         # Resize first column to fit the size of the buttons
         self._tableView.resizeColumnToContents(self.ctrlButCol)
@@ -149,10 +149,10 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
                    "can't open persistent editor")
             raise RuntimeError(msg)
 
-        elif self._model.isLastRow(startRow + 1):
+        elif self.model.isLastRow(startRow + 1):
             # if the signal was emitted from the last row => create new button
             self._tableView.openPersistentEditor(
-                self._model.index(startRow + 1, self.ctrlButCol))
+                self.model.index(startRow + 1, self.ctrlButCol))
             logging.debug("Persisent editor created on row {}".format(
                 startRow + 1))
 

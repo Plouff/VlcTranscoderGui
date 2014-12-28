@@ -83,6 +83,7 @@ if __name__ == '__main__':
     # Set number of row in the table
     rows = 120
 
+    # Fill table with random numbers
     for i in range(rows):
         num = randGen.randint(0, 999999999)
         transcWidget.appendFile(num)

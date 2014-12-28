@@ -7,7 +7,7 @@ The Input files Tab of the GUI
 """
 
 # Import PyQt modules
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from TranscodeMgr.Widget import TranscoderMgrWidget
 
 
@@ -28,12 +28,23 @@ class TranscodeTab(QtWidgets.QWidget):
         # Create the transcoding status widget
         self.transcWidget = TranscoderMgrWidget(self)
 
+        self.updateBut = QtWidgets.QPushButton("Update list")
+        self.updateBut.setMaximumWidth(100)
         self.launchBut = QtWidgets.QPushButton("Transcode all")
         self.launchBut.setMaximumWidth(100)
 
+        # Connect buttons
+        self.updateBut.pressed.connect(self.getFiles)
+
         # Create grid layout
         grid = QtWidgets.QGridLayout()
+        # TODO: fix spanning issue
+#         grid.addWidget(self.transcWidget, 0, 0, 1, 3, QtCore.Qt.AlignLeft)
         grid.addWidget(self.transcWidget, 0, 0)
-        grid.addWidget(self.launchBut, 1, 0)
+        grid.addWidget(self.updateBut, 1, 0)
+        grid.addWidget(self.launchBut, 1, 1)
 
         self.setLayout(grid)
+
+    def getFiles(self):
+        self.parent.getFiles(self.transcWidget.model)

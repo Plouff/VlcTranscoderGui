@@ -7,8 +7,9 @@ The View of the transcoder GUI
 """
 
 # Import PyQt modules
-from PyQt5 import QtGui
+from PyQt5 import QtGui, QtCore
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSignal
 
 # Import custom modules
 from Tabs.ConfigurationTab import ConfigurationTab
@@ -23,6 +24,8 @@ class MainView(QtWidgets.QWidget):
     This is the View part of the MVC implementation. It will describe the GUI
     of the application
     """
+    updateFiles = pyqtSignal(QtCore.QAbstractTableModel)
+
     def __init__(self):
         """
         The constructor of the View
@@ -79,3 +82,6 @@ class MainView(QtWidgets.QWidget):
         docstring for getSelectedExtensions
         """
         return self.inputTab.getSelectedExtensions()
+
+    def getFiles(self, model):
+        self.updateFiles.emit(model)

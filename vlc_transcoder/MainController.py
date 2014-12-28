@@ -13,8 +13,8 @@ from PyQt5 import QtCore
 
 from Controllers.ConfTabCtrl import ConfTabCtrl
 from Controllers.InputTabCtrl import InputTabCtrl
+from Controllers.TranscodeTabCtrl import TranscodeTabCtrl
 
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
 from Workers.DirRunnable import DirRunnable
 
 # Import standard modules
@@ -43,8 +43,12 @@ class MainController():
         # Create dedicated controllers
         self.confTabCtrl = ConfTabCtrl(model, view.confTab)
         self.inputTabCtrl = InputTabCtrl(model, view.inputTab)
+        self.transcodeTabCtrl = TranscodeTabCtrl(model, view.transcodeTab)
         self.pool = QtCore.QThreadPool()
         self.pool.setMaxThreadCount(3)
+
+        # Connect signals
+        self.view.updateFiles.connect(self.updateFiles2Transcode)
 
     def initGUI(self):
         """
@@ -84,8 +88,11 @@ class MainController():
         self.model.dirMgrModel.setStatus(dirpath, "Waiting")
 
         # Send worker to thread pool
-        #qtDebugTrace()
         self.pool.start(dirrunnable)
 
     def raiseThreadError(self, msg):
         raise RuntimeError("Thread Error: {}".format(msg))
+
+    def updateFiles2Transcode(self, transcModel):
+        files = self.inputTabCtrl.getFiles()
+        transcModel.setFiles(files)

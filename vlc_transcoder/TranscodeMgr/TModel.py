@@ -26,7 +26,7 @@ class TModel(QtCore.QAbstractTableModel):
         '''
         Class constructor
 
-        @param[in] parent The parent widget of the model (default: @c None)
+        @param parent The parent widget of the model (default: @c None)
         '''
         super().__init__(parent)
         self._filesdata = []
@@ -118,7 +118,7 @@ class TModel(QtCore.QAbstractTableModel):
         Get the row of a given file. If the file can't be found a
         @c RuntimeError is raised.
 
-        @param[in] file: The name of the file to look for
+        @param file: The name of the file to look for
 
         @return The row corresponding to the file or @c -1 in case of
         error
@@ -138,23 +138,54 @@ class TModel(QtCore.QAbstractTableModel):
 
     def appendFile(self, file):
         """
-        Append a file to the widget
+        Append a file to the widget. the file will be added if the not already
+        in the model
 
-        @param[in] file: the file path to append
+        @param file: the file path to append
         """
-        self.insertRows(self.rowCount(), 1)
-        curRow = self._filesdata[self.rowCount() - 1]
-        curRow[0] = file
-        curRow[1] = "Waiting"
+        for row in self._filesdata:
+            if row[0] == file:
+                return
+        else:
+            self.insertRows(self.rowCount(), 1)
+            curRow = self._filesdata[self.rowCount() - 1]
+            curRow[0] = file
+            curRow[1] = "Waiting"
+
+            startIndex = self.index(self.rowCount() - 1, 0)
+            endIndex = self.index(self.rowCount() - 1, 1)
+            self.dataChanged.emit(startIndex, endIndex)
 
     def setStatus(self, file, status):
+        """
+        Set the status to a given file in the table
+
+        @param file: The file to update
+        @param status: The status to apply
+        """
         row = self.getFileRow(file)
         self._filesdata[row][1] = status
         index = self.index(row, 1)
         self.dataChanged.emit(index, index)
         self.computeUpdateProgress()
 
+    def setFiles(self, files):
+        """
+        Set a list of files to the table with status 'Waiting'
+
+        @param files: A list of files to set
+        """
+        self._filesdata = []
+        for f in files:
+            self.appendFile(f)
+
     def DEBUGsetStatus(self, row, status):
+        """
+        A debug function to set a status giving a row index
+
+        @param row: The row to set
+        @param status: The status to apply
+        """
         self._filesdata[row][1] = status
         index = self.index(row, 1)
         self.dataChanged.emit(index, index)

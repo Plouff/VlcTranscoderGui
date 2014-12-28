@@ -58,3 +58,11 @@ class InputTabCtrl():
         # Create and set delegate to the widget
         self.delegate = DirectoryManagerTableDelegate(dirMgr)
         dirMgr.setItemDelegate(self.delegate)
+
+    def getFiles(self):
+        """
+        Get the list of files
+
+        @return the list of files
+        """
+        return self.view.getFiles()

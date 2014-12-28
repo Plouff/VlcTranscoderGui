@@ -112,3 +112,12 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
         @param[in] data The data to write
         """
         self._setDataWithDirnHeader(dirpath, 'Error', data)
+
+    def getFiles(self):
+        files = []
+        for row in self._directoryData:
+            filesInRow = row[5]
+            if len(filesInRow) > 0:
+                files = files + filesInRow
+
+        return files

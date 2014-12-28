@@ -52,7 +52,7 @@ class TranscoderDirMgrWidget(DirectoryManagerWidget):
         """
         Get the list of files found diring the processing
         """
-        pass
+        return self.model.getFiles()
 
 if __name__ == '__main__':
     LoggingTools.initLogger(logging.INFO)
@@ -63,7 +63,8 @@ if __name__ == '__main__':
     dirWidget = TranscoderDirMgrWidget()
 
     # Create and set model to the widget and its table view
-    additionnalHeaders = ["Status", "Files", "Extensions"]
+    additionnalHeaders = ["Status", "Extensions", "File count", "Files",
+                          "Error"]
     model = TranscoderDirMgrTableModel(
         dirWidget.getTableView(), additionnalHeaders)
     dirWidget.setModelToView(model)
