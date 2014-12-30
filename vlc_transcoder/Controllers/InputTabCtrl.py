@@ -59,10 +59,10 @@ class InputTabCtrl():
         self.delegate = DirectoryManagerTableDelegate(dirMgr)
         dirMgr.setItemDelegate(self.delegate)
 
-    def getFiles(self):
+    def getFilesFromInputTab(self):
         """
         Get the list of files
 
         @return the list of files
         """
-        return self.view.getFiles()
+        return self.view.getFilesFromInputTab()

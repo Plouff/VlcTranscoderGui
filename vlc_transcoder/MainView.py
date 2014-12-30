@@ -25,6 +25,7 @@ class MainView(QtWidgets.QWidget):
     of the application
     """
     updateFiles = pyqtSignal(QtCore.QAbstractTableModel)
+    launchTranscoding = pyqtSignal(QtCore.QAbstractTableModel)
 
     def __init__(self):
         """
@@ -83,5 +84,5 @@ class MainView(QtWidgets.QWidget):
         """
         return self.inputTab.getSelectedExtensions()
 
-    def getFiles(self, model):
+    def getFilesFromInputTab(self, model):
         self.updateFiles.emit(model)

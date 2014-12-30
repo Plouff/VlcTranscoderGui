@@ -8,6 +8,7 @@ The model for the transcoding status table
 
 # Import PyQt modules
 from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal
 
 # Import standard modules
 import logging
@@ -19,8 +20,7 @@ class TModel(QtCore.QAbstractTableModel):
     '''
     A table model for the trancoding manager
     '''
-
-    updateProgress = QtCore.pyqtSignal(int)
+    updateProgress = pyqtSignal(int)
 
     def __init__(self, parent=None):
         '''
@@ -178,6 +178,7 @@ class TModel(QtCore.QAbstractTableModel):
         self._filesdata = []
         for f in files:
             self.appendFile(f)
+        # TODO: Reset GUI since model has been brutally updated
 
     def DEBUGsetStatus(self, row, status):
         """

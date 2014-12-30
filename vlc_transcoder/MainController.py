@@ -9,7 +9,6 @@ The Controller for the transcoder
 # Import PyQt modules
 from PyQt5 import QtCore
 
-# Import custom modules
 
 from Controllers.ConfTabCtrl import ConfTabCtrl
 from Controllers.InputTabCtrl import InputTabCtrl
@@ -49,6 +48,7 @@ class MainController():
 
         # Connect signals
         self.view.updateFiles.connect(self.updateFiles2Transcode)
+        self.view.launchTranscoding.connect(self.launchTranscoding)
 
     def initGUI(self):
         """
@@ -94,5 +94,8 @@ class MainController():
         raise RuntimeError("Thread Error: {}".format(msg))
 
     def updateFiles2Transcode(self, transcModel):
-        files = self.inputTabCtrl.getFiles()
+        files = self.inputTabCtrl.getFilesFromInputTab()
         transcModel.setFiles(files)
+
+    def launchTranscoding(self):
+        pass

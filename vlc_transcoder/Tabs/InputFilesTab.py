@@ -56,7 +56,7 @@ class InputFilesTab(QtWidgets.QWidget):
         """
         return self.extmgr.choices
 
-    def getFiles(self):
+    def getFilesFromInputTab(self):
         """
         Get the list of files
 

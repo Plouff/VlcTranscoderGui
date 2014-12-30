@@ -8,6 +8,9 @@ The Input files Tab of the GUI
 
 # Import PyQt modules
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtCore import pyqtSignal
+
+# Import custom modules
 from TranscodeMgr.Widget import TranscoderMgrWidget
 
 
@@ -15,6 +18,7 @@ class TranscodeTab(QtWidgets.QWidget):
     '''
     This tab will launch transcoding and track the status
     '''
+    launchTranscoding = pyqtSignal(QtCore.QAbstractTableModel)
 
     def __init__(self, parent):
         '''
@@ -34,7 +38,8 @@ class TranscodeTab(QtWidgets.QWidget):
         self.launchBut.setMaximumWidth(100)
 
         # Connect buttons
-        self.updateBut.pressed.connect(self.getFiles)
+        self.updateBut.pressed.connect(self.getFilesFromInputTab)
+        self.launchBut.pressed.connect(self.launchTranscoding)
 
         # Create grid layout
         grid = QtWidgets.QGridLayout()
@@ -46,5 +51,5 @@ class TranscodeTab(QtWidgets.QWidget):
 
         self.setLayout(grid)
 
-    def getFiles(self):
-        self.parent.getFiles(self.transcWidget.model)
+    def getFilesFromInputTab(self):
+        self.parent.getFilesFromInputTab(self.transcWidget.model)
