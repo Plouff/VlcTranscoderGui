@@ -97,5 +97,5 @@ class MainController():
         files = self.inputTabCtrl.getFilesFromInputTab()
         transcModel.setFiles(files)
 
-    def launchTranscoding(self):
-        pass
+    def launchTranscoding(self, model):
+        print("implement me: model: ".format(model))

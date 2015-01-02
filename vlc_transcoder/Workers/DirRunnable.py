@@ -91,11 +91,4 @@ class DirRunnable(QtCore.QRunnable):
         self.signal.updateStatus.emit(self.rootDir, "Scanned")
 
         logging.info(
-            'End of threaded processing of "{}"'.format(self.rootDir))
-
-
-    def printFinished(self):
-        """
-        To debug events
-        """
-        logging.debug("Worker {} sent 'finished' signal".format(str(self)))
+            'End of processing of "{}"'.format(self.rootDir))

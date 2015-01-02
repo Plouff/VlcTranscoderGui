@@ -10,6 +10,7 @@ The table model for the Directory Manager Widget
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
+from PyQt5.Qt import QDir
 
 # Import custom PyQt modules
 from DebugTrace import qtDebugTrace
@@ -17,6 +18,7 @@ from DebugTrace import qtDebugTrace
 # Import standard modules
 import logging
 import warnings
+import os
 from pprint import pprint, pformat
 
 
@@ -291,6 +293,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             QtWidgets.QFileDialog.ShowDirsOnly |
             QtWidgets.QFileDialog.DontResolveSymlinks)
         #newDir = "test"
+        newDir = QDir.toNativeSeparators(newDir)
 
         logging.debug(newDir)
 
@@ -433,3 +436,24 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         # Emit dataChanged
         index = self.index(dirRow, col)
         self.dataChanged.emit(index, index)
+
+if __name__ == '__main__':
+    from PyQt5.Qt import QApplication
+    import os
+    import sys
+    import fnmatch
+
+    print(os.sep)
+    app = QApplication(sys.argv)
+    newDir = QtWidgets.QFileDialog.getExistingDirectory(
+        None, 'Root directory', os.sep,
+        QtWidgets.QFileDialog.ShowDirsOnly |
+        QtWidgets.QFileDialog.DontResolveSymlinks)
+    newDir = QDir.toNativeSeparators(newDir)
+
+    for root, dirs, files in os.walk(newDir):
+        for basename in files:
+            if fnmatch.fnmatch(basename, '*.txt'):
+                filename = os.path.join(root, basename)
+                print(filename)
+    sys.exit(app.exec_())

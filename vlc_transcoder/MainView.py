@@ -25,7 +25,7 @@ class MainView(QtWidgets.QWidget):
     of the application
     """
     updateFiles = pyqtSignal(QtCore.QAbstractTableModel)
-    launchTranscoding = pyqtSignal(QtCore.QAbstractTableModel)
+    launchTranscoding = pyqtSignal(QtCore.QObject)
 
     def __init__(self):
         """
@@ -75,6 +75,9 @@ class MainView(QtWidgets.QWidget):
         tabWidget.addTab(self.confTab, "&Output Configuration")
         tabWidget.addTab(self.inputTab, "&Input files")
         tabWidget.addTab(self.transcodeTab, "&Transcoding")
+
+        # Connect signals
+        self.transcodeTab.launchTranscoding.connect(self.launchTranscoding)
 
         return tabWidget
 

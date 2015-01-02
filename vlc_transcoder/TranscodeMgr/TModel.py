@@ -147,13 +147,12 @@ class TModel(QtCore.QAbstractTableModel):
             if row[0] == file:
                 return
         else:
+            startIndex = self.index(self.rowCount() - 1, 0)
+            endIndex = self.index(self.rowCount() - 1, 1)
             self.insertRows(self.rowCount(), 1)
             curRow = self._filesdata[self.rowCount() - 1]
             curRow[0] = file
             curRow[1] = "Waiting"
-
-            startIndex = self.index(self.rowCount() - 1, 0)
-            endIndex = self.index(self.rowCount() - 1, 1)
             self.dataChanged.emit(startIndex, endIndex)
 
     def setStatus(self, file, status):
@@ -175,10 +174,14 @@ class TModel(QtCore.QAbstractTableModel):
 
         @param files: A list of files to set
         """
+        # First, empty the model
         self._filesdata = []
+        # Reset the views since the model has been brutally updated
+        self.modelReset.emit()
+
+        # Second, fill the model
         for f in files:
             self.appendFile(f)
-        # TODO: Reset GUI since model has been brutally updated
 
     def DEBUGsetStatus(self, row, status):
         """
