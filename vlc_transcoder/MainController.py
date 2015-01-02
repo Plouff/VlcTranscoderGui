@@ -15,6 +15,7 @@ from Controllers.InputTabCtrl import InputTabCtrl
 from Controllers.TranscodeTabCtrl import TranscodeTabCtrl
 
 from Workers.DirRunnable import DirRunnable
+from Workers.TranscoderRunnable import Transcoder
 
 # Import standard modules
 
@@ -94,8 +95,24 @@ class MainController():
         raise RuntimeError("Thread Error: {}".format(msg))
 
     def updateFiles2Transcode(self, transcModel):
+        """
+        Update the list of files of the transcoding tab
+
+        @param transcModel: The model of the transcoding table view
+        """
         files = self.inputTabCtrl.getFilesFromInputTab()
         transcModel.setFiles(files)
 
     def launchTranscoding(self, model):
-        print("implement me: model: ".format(model))
+        """
+        Launch the transcoders in different threads
+
+        @param model: The model of the transcoding table view
+        """
+        # Create a transcoder worker
+        for row in model.filesdata:
+            col = model.getColumnByHeader('File')
+            file = row[col]
+            transcoder = Transcoder(file, model)
+            # Send worker to thread pool
+            self.pool.start(transcoder)

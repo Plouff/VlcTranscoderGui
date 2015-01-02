@@ -345,7 +345,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
                 dirpath, pformat(self._directoryData)))
             return -1
 
-    def getColumByHeader(self, name):
+    def getColumnByHeader(self, name):
         """
         Get the column number of a given header.
 

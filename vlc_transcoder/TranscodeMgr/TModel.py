@@ -29,17 +29,17 @@ class TModel(QtCore.QAbstractTableModel):
         @param parent The parent widget of the model (default: @c None)
         '''
         super().__init__(parent)
-        self._filesdata = []
-        self._headers = ['File', 'Status']
+        self.filesdata = []
+        self._headers = ['File', 'Status', 'Error Message']
 
     def __repr__(self):
-        msg = '{}@{}(_headers={}, _filesdata={})'.format(
+        msg = '{}@{}(_headers={}, filesdata={})'.format(
             self.__class__.__name__, self.__class__, str(self._headers),
-            str(self._filesdata))
+            str(self.filesdata))
         return msg
 
     def rowCount(self, parent=None):
-        return len(self._filesdata)
+        return len(self.filesdata)
 
     def columnCount(self, parent=None):
         return len(self._headers)
@@ -65,7 +65,7 @@ class TModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.ToolTipRole:
             column = index.column()
             row = index.row()
-            data = self._filesdata[row][column]
+            data = self.filesdata[row][column]
             return data
 
         #if role == QtCore.Qt.DecorationRole:
@@ -76,7 +76,7 @@ class TModel(QtCore.QAbstractTableModel):
             # On DisplayRole just retrieve the data in the data structure
             column = index.column()
             row = index.row()
-            value = self._filesdata[row][column]
+            value = self.filesdata[row][column]
             return value
 
     def insertRows(self, row, count, parent=QtCore.QModelIndex()):
@@ -99,7 +99,7 @@ class TModel(QtCore.QAbstractTableModel):
                 # Get an empty with correct length
                 newRow = self.getEmptyRow()
                 # Insert it in the directory data structure
-                self._filesdata.insert(row + 1 + i, newRow.copy())
+                self.filesdata.insert(row + 1 + i, newRow.copy())
             # Mandatory call of endInsertRows
             self.endInsertRows()
             return True
@@ -123,7 +123,7 @@ class TModel(QtCore.QAbstractTableModel):
         @return The row corresponding to the file or @c -1 in case of
         error
         """
-        for i, row in enumerate(self._filesdata):
+        for i, row in enumerate(self.filesdata):
             # Loop thru row in file structure with the index i
             # logging.debug("Looking for {} in {}".format(file, pformat(row)))
             if file in row:
@@ -136,6 +136,9 @@ class TModel(QtCore.QAbstractTableModel):
                     file, pformat(self._headers)))
             return -1
 
+    def getColumnByHeader(self, header):
+        return self._headers.index(header)
+
     def appendFile(self, file):
         """
         Append a file to the widget. the file will be added if the not already
@@ -143,17 +146,34 @@ class TModel(QtCore.QAbstractTableModel):
 
         @param file: the file path to append
         """
-        for row in self._filesdata:
-            if row[0] == file:
+        for row in self.filesdata:
+            filecol = self.getColumnByHeader('File')
+            if row[filecol] == file:
                 return
         else:
             startIndex = self.index(self.rowCount() - 1, 0)
             endIndex = self.index(self.rowCount() - 1, 1)
             self.insertRows(self.rowCount(), 1)
-            curRow = self._filesdata[self.rowCount() - 1]
-            curRow[0] = file
-            curRow[1] = "Waiting"
+            curRow = self.filesdata[self.rowCount() - 1]
+            col = self.getColumnByHeader('File')
+            curRow[col] = file
+            col = self.getColumnByHeader('Status')
+            curRow[col] = "Waiting"
             self.dataChanged.emit(startIndex, endIndex)
+
+    def setFileWithHeader(self, file, header, data):
+        """
+        Set the data in the table with file and header
+
+        @param file: The file to update
+        @param header: The header of the column to update
+        @param data: The data to set
+        """
+        row = self.getFileRow(file)
+        col = self.getColumnByHeader(header)
+        self.filesdata[row][col] = data
+        index = self.index(row, col)
+        self.dataChanged.emit(index, index)
 
     def setStatus(self, file, status):
         """
@@ -162,11 +182,17 @@ class TModel(QtCore.QAbstractTableModel):
         @param file: The file to update
         @param status: The status to apply
         """
-        row = self.getFileRow(file)
-        self._filesdata[row][1] = status
-        index = self.index(row, 1)
-        self.dataChanged.emit(index, index)
+        self.setFileWithHeader(file, 'Status', status)
         self.computeUpdateProgress()
+
+    def setError(self, file, error):
+        """
+        Set the status to a given file in the table
+
+        @param file: The file to update
+        @param error: The error message to apply
+        """
+        self.setFileWithHeader(file, 'Error Message', error)
 
     def setFiles(self, files):
         """
@@ -175,7 +201,7 @@ class TModel(QtCore.QAbstractTableModel):
         @param files: A list of files to set
         """
         # First, empty the model
-        self._filesdata = []
+        self.filesdata = []
         # Reset the views since the model has been brutally updated
         self.modelReset.emit()
 
@@ -190,8 +216,9 @@ class TModel(QtCore.QAbstractTableModel):
         @param row: The row to set
         @param status: The status to apply
         """
-        self._filesdata[row][1] = status
-        index = self.index(row, 1)
+        col = self.getColumnByHeader('Status')
+        self.filesdata[row][col] = status
+        index = self.index(row, col)
         self.dataChanged.emit(index, index)
         self.computeUpdateProgress()
 
@@ -201,8 +228,10 @@ class TModel(QtCore.QAbstractTableModel):
         corresponding status bar
         """
         waitCount = 0
-        for row in self._filesdata:
-            if row[1] == 'Waiting':
+        statuscol = self.getColumnByHeader('Status')
+        matchingStatus = ['Waiting', 'Transcoding']
+        for row in self.filesdata:
+            if row[statuscol] in matchingStatus:
                 waitCount = waitCount + 1
 
         prog = 1 - (waitCount / self.rowCount())

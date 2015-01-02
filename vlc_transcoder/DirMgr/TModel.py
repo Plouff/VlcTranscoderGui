@@ -48,8 +48,8 @@ class TranscoderDirMgrTableModel(DirectoryManagerTableModel):
     def data(self, index, role):
         if role == QtCore.Qt.TextAlignmentRole:
             pass
-            statusCol = self.getColumByHeader('Status')
-            filesCountCol = self.getColumByHeader('File count')
+            statusCol = self.getColumnByHeader('Status')
+            filesCountCol = self.getColumnByHeader('File count')
             column = index.column()
             if column == statusCol or column == filesCountCol:
                 return QtCore.Qt.AlignCenter

@@ -12,7 +12,6 @@ from PyQt5.QtCore import pyqtSignal
 
 # Import custom modules
 from NzToolBox.FindFiles import findFilesbyExtension
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
 # Import standard modules
 import logging
@@ -34,7 +33,11 @@ class DirRunnable(QtCore.QRunnable):
 
     def __init__(self, rootDir, extensions, dirMgrModel):
         """
-        docstring for __init__
+        The class constructor
+        
+        @param rootDir: The root directory for the scan
+        @param extensions: The list of extensions to look for
+        @param dirMgrModel: The model of the directory manager
         """
         self.rootDir = rootDir
         self.extensions = extensions
@@ -61,7 +64,6 @@ class DirRunnable(QtCore.QRunnable):
         """
         Specific implementation of the process function
         """
-        #qtDebugTrace()
         logging.info(
             'looking for files in directory "{}" with extensions {}'.format(
                 self.rootDir, self.extensions))

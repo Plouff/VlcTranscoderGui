@@ -19,9 +19,11 @@ from MainView import MainView
 from MainModel import MainModel
 from MainController import MainController
 from NzToolBox import LoggingTools
+import settings
 
 # Import standard modules
 import logging
+
 
 """
 Script wrapper
@@ -32,6 +34,9 @@ if __name__ == '__main__':
     # Configure logger
     # LoggingTools.initLogger(logging.DEBUG)
     LoggingTools.initLogger(logging.INFO)
+
+    # Demo mode
+    settings.demoMode = True
 
     # Create the app
     app = QtWidgets.QApplication(sys.argv)
