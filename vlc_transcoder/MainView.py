@@ -89,3 +89,6 @@ class MainView(QtWidgets.QWidget):
 
     def getFilesFromInputTab(self, model):
         self.updateFiles.emit(model)
+
+    def getConfig(self):
+        self.confTab.getConfig()

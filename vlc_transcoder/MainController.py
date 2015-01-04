@@ -109,6 +109,9 @@ class MainController():
 
         @param model: The model of the transcoding table view
         """
+        # Get config
+        self.view.getConfig()
+
         # Create a transcoder worker
         for row in model.filesdata:
             col = model.getColumnByHeader('File')

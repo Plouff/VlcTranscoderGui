@@ -15,6 +15,8 @@ from PyQt5 import QtCore
 from NzPyQtToolBox import NzQWidgets
 
 # Import standard modules
+import re
+import logging
 
 
 class ConfigurationTab(QtWidgets.QWidget):
@@ -83,18 +85,18 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         # Bit rate
         vBitRateLabel = QtWidgets.QLabel("Bit rate:")
-        autoBitRateDisCkBox = NzQWidgets.NzQDisablingCheckBox(text='Auto',
+        self.autoBitRateDisCkBox = NzQWidgets.NzQDisablingCheckBox(text='Auto',
                                                               parent=self)
-        autoBitRateDisCkBox.setChecked(True)
+        self.autoBitRateDisCkBox.setChecked(True)
 
-        vBitRateSpin = QtWidgets.QSpinBox(self)
-        autoBitRateDisCkBox.addSlaveWidget(vBitRateSpin,
+        self.vBitRateSpin = QtWidgets.QSpinBox(self)
+        self.autoBitRateDisCkBox.addSlaveWidget(self.vBitRateSpin,
                                            isEnabledWhenMasterIsEnabled=False)
 
         # Add widgets
         grid.addWidget(vBitRateLabel, cRow, 3)
-        grid.addWidget(autoBitRateDisCkBox, cRow, 4)
-        grid.addWidget(vBitRateSpin, cRow, 5)
+        grid.addWidget(self.autoBitRateDisCkBox, cRow, 4)
+        grid.addWidget(self.vBitRateSpin, cRow, 5)
 
         return cRow
 
@@ -124,11 +126,11 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         # Channels
         aChannelsLabel = QtWidgets.QLabel("Channels:")
-        aChannelsSpin = QtWidgets.QSpinBox(self)
-        aChannelsSpin.setValue(2)
+        self.aChannelsSpin = QtWidgets.QSpinBox(self)
+        self.aChannelsSpin.setValue(2)
 
         grid.addWidget(aChannelsLabel, cRow, 4)
-        grid.addWidget(aChannelsSpin, cRow, 5)
+        grid.addWidget(self.aChannelsSpin, cRow, 5)
 
         # Sample rate
         aSampleRateLabel = QtWidgets.QLabel("Sample rate")
@@ -148,9 +150,9 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         @return cRow int: The final row index after the widgets were created
         """
-        resizeDisCheckB = NzQWidgets.NzQDisablingCheckBox(
+        self.resizeDisCheckB = NzQWidgets.NzQDisablingCheckBox(
             text="Resize", parent=self)
-        grid.addWidget(resizeDisCheckB, cRow, 0)
+        grid.addWidget(self.resizeDisCheckB, cRow, 0)
 
         # Resize by standard resolution
         byStdResolDisRadio = NzQWidgets.NzQDisablingRadioButton(
@@ -200,13 +202,13 @@ class ConfigurationTab(QtWidgets.QWidget):
         byPercentDisRadio = NzQWidgets.NzQDisablingRadioButton(
             text="Percent", parent=self, isInMutexGroup=True)
 
-        byPercentSpin = QtWidgets.QSpinBox(self)
-        byPercentSpin.setSuffix("%")
-        byPercentSpin.setRange(0, 100)
-        byPercentSpin.setValue(50)
+        self.byPercentSpin = QtWidgets.QSpinBox(self)
+        self.byPercentSpin.setSuffix("%")
+        self.byPercentSpin.setRange(0, 100)
+        self.byPercentSpin.setValue(50)
 
         grid.addWidget(byPercentDisRadio, cRow, 1)
-        grid.addWidget(byPercentSpin, cRow, 2)
+        grid.addWidget(self.byPercentSpin, cRow, 2)
 
         # QButtonGroup for mutually exclusive resize options
         resizeGroup = QtWidgets.QButtonGroup(self)
@@ -218,14 +220,14 @@ class ConfigurationTab(QtWidgets.QWidget):
         # Create disable links for "resize by standard resolution" radio button
         for wdg in (self.byHeightCombo, customHeightDisCheckB,
                     customHeightLineEd, self.byWidthCombo,
-                    customWidthDisCheckB, customWidthLineEd, byPercentSpin):
+                    customWidthDisCheckB, customWidthLineEd, self.byPercentSpin):
             byStdResolDisRadio.addSlaveWidget(wdg, False)
 
         byStdResolDisRadio.addSlaveWidget(self.byStdResolCombo)
 
         # Create disable links for "resize by height" radio button
         for wdg in (self.byWidthCombo, customWidthDisCheckB,
-                    customWidthLineEd, byPercentSpin,
+                    customWidthLineEd, self.byPercentSpin,
                     self.byStdResolCombo):
             byHeightDisRadio.addSlaveWidget(wdg, False)
 
@@ -235,7 +237,7 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         # Create disable links for "resize by width" radio button
         for wdg in (self.byHeightCombo, customHeightDisCheckB,
-                    customHeightLineEd, byPercentSpin,
+                    customHeightLineEd, self.byPercentSpin,
                     self.byStdResolCombo):
             byWidthDisRadio.addSlaveWidget(wdg, False)
 
@@ -249,16 +251,60 @@ class ConfigurationTab(QtWidgets.QWidget):
                     customWidthDisCheckB, customWidthLineEd,
                     self.byStdResolCombo):
             byPercentDisRadio.addSlaveWidget(wdg, False)
-        byPercentDisRadio.addSlaveWidget(byPercentSpin)
+        byPercentDisRadio.addSlaveWidget(self.byPercentSpin)
 
-        # Add slave widget to be disabled by resizeDisCheckB
+        # Add slave widget to be disabled by self.resizeDisCheckB
         for wdg in (byHeightDisRadio, self.byHeightCombo,
                     customHeightDisCheckB, customHeightLineEd, byWidthDisRadio,
                     self.byWidthCombo, customWidthDisCheckB,
-                    customWidthLineEd, byPercentDisRadio, byPercentSpin,
+                    customWidthLineEd, byPercentDisRadio, self.byPercentSpin,
                     byStdResolDisRadio, self.byStdResolCombo):
-            resizeDisCheckB.addSlaveWidget(wdg)
+            self.resizeDisCheckB.addSlaveWidget(wdg)
 
         resizeGroup.setExclusive(True)
 
         return cRow
+
+    def getConfig(self):
+        # Encapsulator
+        encaps = self.encapsCombo.currentText()
+
+        # Video
+        vcodec = self.vCodecCombo.currentText()
+        if self.autoBitRateDisCkBox.isChecked():
+            vbitrate = self.vBitRateSpin.value()
+        else:
+            vbitrate = 0
+
+        # Audio
+        acodec = self.aCodecCombo.currentText()
+        abitrate = self.aBitRateCombo.currentText()
+        achannels = self.aChannelsSpin.value()
+        asamplerate = self.aSampleRateCombo.currentText()
+
+        # Resize
+        width = 0
+        height = 0
+        aspectratio = 1
+        if self.resizeDisCheckB.isChecked():
+            if self.byStdResolCombo.isEnabled():
+                size = self.byStdResolCombo.currentText()
+                pat = re.compile(r"(\d+)x(\d+)", re.IGNORECASE)
+                m = re.match(pat, size)
+                width = m.group(0)
+                height = m.group(1)
+            elif self.byHeightCombo.isEnabled():
+                height = self.byHeightCombo.currentText()
+            elif self.byWidthCombo.isEnabled():
+                width = self.byWidthCombo.currentText()
+            elif self.byPercentSpin.isEnabled():
+                aspectratio = self.byPercentSpin.value()
+
+        logging.info(
+            "encaps: {}, vcodec={}, vbitrate={}\n".format(
+                encaps, vcodec, vbitrate) +
+            "acodec={}, abitrate={}, achannels={}, asamplerate={}\n".format(
+                acodec, abitrate, achannels, asamplerate) +
+            "width={}, height={}, aspectratio={}".format(
+                width, height, aspectratio)
+        )
