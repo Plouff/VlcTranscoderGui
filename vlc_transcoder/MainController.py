@@ -10,14 +10,12 @@ The Controller for the transcoder
 from PyQt5 import QtCore
 
 
+# Import custom modules
 from Controllers.ConfTabCtrl import ConfTabCtrl
 from Controllers.InputTabCtrl import InputTabCtrl
 from Controllers.TranscodeTabCtrl import TranscodeTabCtrl
-
 from Workers.DirRunnable import DirRunnable
 from Workers.TranscoderRunnable import Transcoder
-
-# Import standard modules
 
 
 class MainController():
@@ -110,12 +108,12 @@ class MainController():
         @param model: The model of the transcoding table view
         """
         # Get config
-        self.view.getConfig()
+        config = self.view.getConfig()
 
         # Create a transcoder worker
         for row in model.filesdata:
             col = model.getColumnByHeader('File')
             file = row[col]
-            transcoder = Transcoder(file, model)
+            transcoder = Transcoder(file, model, config)
             # Send worker to thread pool
             self.pool.start(transcoder)

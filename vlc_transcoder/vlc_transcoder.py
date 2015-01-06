@@ -1,5 +1,5 @@
 #! python3
-#-*-coding: utf-8 -*-
+# -*-coding: utf-8 -*-
 
 """
 @file vlc_transcoder.py
@@ -36,7 +36,7 @@ if __name__ == '__main__':
     LoggingTools.initLogger(logging.INFO)
 
     # Demo mode
-    settings.demoMode = True
+    settings.demoMode = False
 
     # Create the app
     app = QtWidgets.QApplication(sys.argv)
@@ -53,10 +53,3 @@ if __name__ == '__main__':
 
     sys.exit(app.exec_())
 
-
-# vlc -vvv input_stream --sout
-# #transcode{vcodec=mp4v,acodec=mpga,vb=800,ab=128,deinterlace}: CALL
-# "C:\Program Files\VideoLAN\VLC\vlc" -I dummy -vvv %1
-#--sout=#transcode{acodec="mpga",ab="512",channels="2",samplerate="44100"}: \
-#    standard{access="file",mux="mpeg1",dst="%_commanm%.mp3"}
-#vlc://quit

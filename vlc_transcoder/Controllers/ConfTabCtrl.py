@@ -40,11 +40,15 @@ class ConfTabCtrl():
         self.encapsulatorModel = TooltipListModel(
             self.model.encapsulatorsODic)
         self.view.encapsCombo.setModel(self.encapsulatorModel)
+        self.view.encapsCombo.setCurrentIndex(
+            self.view.encapsCombo.findText("ts"))
 
         # Video codec
         self.vCodecModel = TooltipListModel(
             self.model.vCodecODic)
         self.view.vCodecCombo.setModel(self.vCodecModel)
+        self.view.vCodecCombo.setCurrentIndex(
+            self.view.vCodecCombo.findText("h264"))
 
         # Audio codec
         self.aCodecModel = TooltipListModel(
@@ -54,6 +58,8 @@ class ConfTabCtrl():
         # Audio bitrate
         self.aBitRateModel = QtCore.QStringListModel(self.model.aBitRateList)
         self.view.aBitRateCombo.setModel(self.aBitRateModel)
+        self.view.aBitRateCombo.setCurrentIndex(
+            self.view.aBitRateCombo.findText("128kB/s"))
 
         # Sample rate
         self.aSampleRateModel = QtCore.QStringListModel(

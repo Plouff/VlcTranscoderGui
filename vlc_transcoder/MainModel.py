@@ -1,11 +1,12 @@
 #! python3
-#-*-coding: utf-8 -*-
+# -*-coding: utf-8 -*-
 
 """
 @file MainModel.py
 The Model for the transcoder
 """
 
+# Import standard modules
 from collections import OrderedDict
 
 
@@ -45,8 +46,8 @@ class MainModel():
         ])
 
         self.vCodecODic = OrderedDict([
-            ('h264', 'H264'),
             ('H263', 'H263'),
+            ('h264', 'H264'),
             ('mp1v', 'MPEG-1 Video - recommended for portability'),
             ('mp2v', 'MPEG-2 Video - used in DVDs'),
             ('mp4v', 'MPEG-4 Video'),

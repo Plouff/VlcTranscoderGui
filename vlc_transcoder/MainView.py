@@ -91,4 +91,4 @@ class MainView(QtWidgets.QWidget):
         self.updateFiles.emit(model)
 
     def getConfig(self):
-        self.confTab.getConfig()
+        return self.confTab.getConfig()
