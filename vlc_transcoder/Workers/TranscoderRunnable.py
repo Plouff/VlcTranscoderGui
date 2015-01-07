@@ -1,5 +1,5 @@
 #! python3
-#-*-coding: utf-8 -*-
+# -*-coding: utf-8 -*-
 
 """
 @file TranscoderRunnable.py
@@ -12,10 +12,15 @@ from PyQt5.QtCore import pyqtSignal
 
 # Import custom modules
 import settings
+from NzToolBox.Tools import getProgramBaseFolder
 
 # Import standard modules
 import logging
 import subprocess
+from subprocess import CalledProcessError
+import tempfile
+import os
+import shutil
 
 
 class TranscoderSignals(QtCore.QObject):
@@ -77,28 +82,81 @@ class Transcoder(QtCore.QRunnable):
 
         logging.info('End of transcoding of "{}"'.format(self.file))
 
+    def getVlcErrorMsg(self, e):
+        """
+        Get a formatted VLC error given @c CalledProcessError from a VLC
+         execution
+
+        @param e: a @c CalledProcessError exception
+        """
+        if e.returncode == 1:
+            vlcerror = 'Unspecified error (code 1) {}'.format(e.output)
+        elif e.returncode == 2:
+            vlcerror = 'Not enough memory (code 2) {}'.format(e.output)
+        elif e.returncode == 3:
+            vlcerror = 'Timeout (code 3) {}'.format(e.output)
+        elif e.returncode == 4:
+            vlcerror = 'Module not found (code 4) {}'.format(e.output)
+        elif e.returncode == 5:
+            vlcerror = 'Object not found (code 5) {}'.format(e.output)
+        elif e.returncode == 6:
+            vlcerror = 'Variable not found (code 6) {}'.format(e.output)
+        elif e.returncode == 7:
+            vlcerror = 'Bad variable value (code 7) {}'.format(e.output)
+        elif e.returncode == 8:
+            vlcerror = 'Item not found (code 8) {}'.format(e.output)
+        return vlcerror
+
     def launchTranscoder(self):
         cfg = self.config
-        vlcpath = r"C:\Program Files\VideoLAN\VLC\vlc"
-        outputfile = r"D:\temp"
+        vlcpath = r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
+
+        # Create temporary file path
+        tmpoutfile = tempfile.NamedTemporaryFile()
+        tmpoutfilename = tmpoutfile.name
+        tmpoutfile.close()
+
+        # Create command line argument for vlc
         args = ("-I dummy -vvv '{}' ".format(self.file) +
-                "--sout=#transcode{{vcodec={}, vb={}, height={}, ".format(
+                "--sout=#transcode{{vcodec={},vb={},height={},".format(
                     cfg.vcodec, cfg.vbitrate, cfg.height) +
-                "acodec={}, ab={}, channels={}, samplerate={}}}".format(
+                "acodec={},ab={},channels={},samplerate={}}}".format(
                     cfg.acodec, cfg.abitrate, cfg.achannels, cfg.asamplerate) +
-                ":std{{access=file, mux={}, dst='{}'".format(
-                    cfg.encaps, outputfile)
+                ":std{{access=file,mux={},dst='{}'".format(
+                    cfg.encaps, tmpoutfilename)
                 )
         if cfg.deinterlace:
-            args = args + r", deinterlace} vlc://quit"
+            args = args + r",deinterlace} vlc://quit"
         else:
             args = args + r"} vlc://quit"
+            args = args + r"}"
 
+        # Debug print
         logging.info("vlc " + args)
 
-#         subprocess.check_call()
+        argslist = args.split(' ')
+        cmd = [vlcpath] + argslist
+        try:
+            logging.info(cmd)
+            subprocess.check_call(cmd)
+            outputfile = self.createOutputFilename(self.file)
+            shutil.move(tmpoutfilename, outputfile)
 
-# vlcpath -I dummy -vvv "%%i" --sout=#transcode{vcodec=%vcodec%,vb=%vb%,height=%height%,acodec=%acodec%,ab=%ab%,channels=2,samplerate=%samplerate%}:std{access=file,mux=%mux%,dst=!temp_out!} vlc://quit  
+        except CalledProcessError as e:
+            vlcerror = self.getVlcErrorMsg(e)
+
+            msg = "Failed to transcode file: '{}'. ".format(self.file)
+            msg = msg + "VLC returned error: {}".format(vlcerror)
+            raise RuntimeError(msg)
+            raise e
+        except FileNotFoundError as e:
+            raise RuntimeError("Couldn't find command '{}'".format(cmd[0]))
+            raise e
+
+        # vlcpath -I dummy -vvv "%%i" --sout=#transcode{vcodec=%vcodec%,
+        # vb=%vb%,height=%height%,acodec=%acodec%,ab=%ab%,channels=2,
+        # samplerate=%samplerate%}:std{access=file,mux=%mux%,dst=!temp_out!} 
+        # vlc://quit  
 
     def demo(self):
             import random
@@ -113,3 +171,19 @@ class Transcoder(QtCore.QRunnable):
                 illegal = num.thisIsABug
             else:
                 time.sleep(5)
+
+    def createOutputFilename(self, file, suffix='_transcoded'):
+        """
+        Create a file name with a give suffix
+
+        @param file: The file to suffix
+        @param suffix: The suffix to apply (default: '_transcoded'
+
+        @return: A file path with the given suffix
+        """
+        split = os.path.splitext(file)
+        return split[0] + suffix + split[1]
+
+if __name__ == '__main__':
+    print(Transcoder.createOutputFilename(
+        None, getProgramBaseFolder()+r'\tt.py'))

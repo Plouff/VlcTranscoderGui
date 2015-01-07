@@ -10,4 +10,4 @@ Custom toolbox modules
 Custom toolbox modules
 """
 # List of modules
-__all__ = ['WholeToolBox.py', 'FindFiles.py', 'LoggingTools.py']
+__all__ = ['WholeToolBox.py', 'FindFiles.py', 'LoggingTools.py', 'Tools.py']
