@@ -136,11 +136,11 @@ class ConfigurationTab(QtWidgets.QWidget):
         grid.addWidget(self.aChannelsSpin, cRow, 5)
 
         # Sample rate
-        aSampleRateLabel = QtWidgets.QLabel("Sample rate")
-        self.aSampleRateCombo = QtWidgets.QComboBox(self)
-
-        grid.addWidget(aSampleRateLabel, cRow, 6)
-        grid.addWidget(self.aSampleRateCombo, cRow, 7)
+#         aSampleRateLabel = QtWidgets.QLabel("Sample rate")
+#         self.aSampleRateCombo = QtWidgets.QComboBox(self)
+# 
+#         grid.addWidget(aSampleRateLabel, cRow, 6)
+#         grid.addWidget(self.aSampleRateCombo, cRow, 7)
 
         return cRow
 
@@ -300,9 +300,9 @@ class ConfigurationTab(QtWidgets.QWidget):
         abitrateTmp = re.match(r"(\d+)\w.*", abitrateTmp, re.IGNORECASE)
         abitrate = abitrateTmp.group(1)
         achannels = self.aChannelsSpin.value()
-        asamplerateTmp = self.aSampleRateCombo.currentText()
-        asamplerateTmp = re.match(r"(\d+)\w.*", asamplerateTmp, re.IGNORECASE)
-        asamplerate = asamplerateTmp.group(1)
+#         asamplerateTmp = self.aSampleRateCombo.currentText()
+#         asamplerateTmp = re.match(r"(\d+)\w.*", asamplerateTmp, re.IGNORECASE)
+#         asamplerate = asamplerateTmp.group(1)
 
         # Resize
         width = 0
@@ -331,7 +331,9 @@ class ConfigurationTab(QtWidgets.QWidget):
         # Deinterlace
         deinterlace = self.deinterlaceCheckB.isChecked()
 
+        # TODO: Sample is not supported for the moment (set to None)
         config = TranscodingConfig(encaps, vcodec, vbitrate, acodec, abitrate,
-            achannels, asamplerate, width, height, aspectratio, deinterlace)
+            achannels, None, width, height, aspectratio,
+            deinterlace)
 
         return config

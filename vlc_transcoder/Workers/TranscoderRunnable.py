@@ -13,6 +13,7 @@ from PyQt5.QtCore import pyqtSignal
 # Import custom modules
 import settings
 from NzToolBox.Tools import getProgramBaseFolder
+from NzToolBox.Tools import escapeSpaces
 
 # Import standard modules
 import logging
@@ -105,6 +106,9 @@ class Transcoder(QtCore.QRunnable):
             vlcerror = 'Bad variable value (code 7) {}'.format(e.output)
         elif e.returncode == 8:
             vlcerror = 'Item not found (code 8) {}'.format(e.output)
+        else:
+            vlcerror = "Unkown Error (code {}), desc.: {}".format(
+                e.returncode, e.output)
         return vlcerror
 
     def launchTranscoder(self):
@@ -117,30 +121,36 @@ class Transcoder(QtCore.QRunnable):
         tmpoutfile.close()
 
         # Create command line argument for vlc
-        args = ("-I dummy -vvv '{}' ".format(self.file) +
-                "--sout=#transcode{{vcodec={},vb={},height={},".format(
+        args = (r'-I dummy -vvv FILE ' +
+                '--sout=#transcode{{vcodec={},vb={},height={},'.format(
                     cfg.vcodec, cfg.vbitrate, cfg.height) +
-                "acodec={},ab={},channels={},samplerate={}}}".format(
+                'acodec={},ab={},channels={}}}'.format(
                     cfg.acodec, cfg.abitrate, cfg.achannels, cfg.asamplerate) +
-                ":std{{access=file,mux={},dst='{}'".format(
+                ':std{{access=file,mux={},dst="{}"'.format(
                     cfg.encaps, tmpoutfilename)
                 )
         if cfg.deinterlace:
-            args = args + r",deinterlace} vlc://quit"
+            args = args + r',deinterlace} vlc://quit'
         else:
             args = args + r"} vlc://quit"
-            args = args + r"}"
+            # args = args + r'}'
 
         # Debug print
         logging.info("vlc " + args)
 
         argslist = args.split(' ')
+
+        # Since the file may contain space characters we need to add it after
+        # the split of the command line
+        argslist[argslist.index('FILE')] = self.file
+
+        # Create final command
         cmd = [vlcpath] + argslist
+
         try:
             logging.info(cmd)
             subprocess.check_call(cmd)
             outputfile = self.createOutputFilename(self.file)
-            shutil.move(tmpoutfilename, outputfile)
 
         except CalledProcessError as e:
             vlcerror = self.getVlcErrorMsg(e)
@@ -152,6 +162,8 @@ class Transcoder(QtCore.QRunnable):
         except FileNotFoundError as e:
             raise RuntimeError("Couldn't find command '{}'".format(cmd[0]))
             raise e
+
+        shutil.move(tmpoutfilename, outputfile)
 
         # vlcpath -I dummy -vvv "%%i" --sout=#transcode{vcodec=%vcodec%,
         # vb=%vb%,height=%height%,acodec=%acodec%,ab=%ab%,channels=2,

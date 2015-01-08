@@ -62,9 +62,9 @@ class ConfTabCtrl():
             self.view.aBitRateCombo.findText("128kB/s"))
 
         # Sample rate
-        self.aSampleRateModel = QtCore.QStringListModel(
-            self.model.aSampleRateList)
-        self.view.aSampleRateCombo.setModel(self.aSampleRateModel)
+#         self.aSampleRateModel = QtCore.QStringListModel(
+#             self.model.aSampleRateList)
+#         self.view.aSampleRateCombo.setModel(self.aSampleRateModel)
 
         # Standard Resolution
         self.stdResolModel = TooltipListModel(
