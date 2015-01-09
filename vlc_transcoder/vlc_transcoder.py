@@ -20,6 +20,7 @@ from MainModel import MainModel
 from MainController import MainController
 from NzToolBox import LoggingTools
 import settings
+from NzPyQtToolBox.EasterEgg import EasterEgg
 
 # Import standard modules
 import logging
@@ -32,7 +33,7 @@ if __name__ == '__main__':
     import sys
 
     # Configure logger
-    # LoggingTools.initLogger(logging.DEBUG)
+#     LoggingTools.initLogger(logging.DEBUG)
     LoggingTools.initLogger(logging.INFO)
 
     # Demo mode
@@ -40,6 +41,9 @@ if __name__ == '__main__':
 
     # Create the app
     app = QtWidgets.QApplication(sys.argv)
+
+    # Plug easter egg
+    easterEgg = EasterEgg(app, "demo", settings.toggleDemo)
 
     # Create the main view
     view = MainView()
@@ -52,4 +56,3 @@ if __name__ == '__main__':
     controller.initGUI()
 
     sys.exit(app.exec_())
-

@@ -12,8 +12,6 @@ from PyQt5.QtCore import pyqtSignal
 
 # Import custom modules
 import settings
-from NzToolBox.Tools import getProgramBaseFolder
-from NzToolBox.Tools import escapeSpaces
 
 # Import standard modules
 import logging
@@ -67,7 +65,7 @@ class Transcoder(QtCore.QRunnable):
         self.signal.updateStatus.emit(self.file, "Transcoding")
 
         try:
-            if settings.demoMode:
+            if settings.GlobalVars.demoMode:
                 self.demo()
             else:
                 self.launchTranscoder()
@@ -167,8 +165,8 @@ class Transcoder(QtCore.QRunnable):
 
         # vlcpath -I dummy -vvv "%%i" --sout=#transcode{vcodec=%vcodec%,
         # vb=%vb%,height=%height%,acodec=%acodec%,ab=%ab%,channels=2,
-        # samplerate=%samplerate%}:std{access=file,mux=%mux%,dst=!temp_out!} 
-        # vlc://quit  
+        # samplerate=%samplerate%}:std{access=file,mux=%mux%,dst=!temp_out!}
+        # vlc://quit
 
     def demo(self):
             import random
@@ -182,7 +180,7 @@ class Transcoder(QtCore.QRunnable):
             elif num == 1:
                 illegal = num.thisIsABug
             else:
-                time.sleep(5)
+                time.sleep(3)
 
     def createOutputFilename(self, file, suffix='_transcoded'):
         """
@@ -197,5 +195,4 @@ class Transcoder(QtCore.QRunnable):
         return split[0] + suffix + split[1]
 
 if __name__ == '__main__':
-    print(Transcoder.createOutputFilename(
-        None, getProgramBaseFolder()+r'\tt.py'))
+    pass
