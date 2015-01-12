@@ -9,17 +9,23 @@ The table model for the Directory Manager Widget
 # Import PyQt
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 from PyQt5.Qt import QDir
 
 # Import custom PyQt modules
-from DebugTrace import qtDebugTrace
 
 # Import standard modules
 import logging
 import warnings
-import os
-from pprint import pprint, pformat
+from pprint import pformat
+
+
+class DirModelSignals(QtCore.QObject):
+    """
+    Signals for the directory manager model class
+    """
+    directoryAdded = QtCore.pyqtSignal(str)
+    newButtonCreated = QtCore.pyqtSignal(QtCore.QModelIndex,
+                                         QtCore.QModelIndex)
 
 
 class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
@@ -28,9 +34,6 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
     directories when the + button is pressed and remove rows when the - button
     is pressed
     """
-    directoryAdded = QtCore.pyqtSignal(str)
-    newButtonCreated = QtCore.pyqtSignal(QtCore.QModelIndex,
-                                         QtCore.QModelIndex)
 
     def __init__(self, parent=None, additionnalHeaders=[]):
         """
@@ -48,11 +51,14 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         # Initialiaze and empty data structure
         self._directoryData = [[]]
         # Add an empty to the data structure
-        emptyRow = self.getEmptyRow()
+        emptyRow = self._getEmptyRow()
         self._directoryData[0] = emptyRow
 
         # Store parent
-        self.parent = parent
+        self._parent = parent
+
+        # Signals
+        self.signals = DirModelSignals()
 
         # The static index of the columns
         self._butColumn = 0
@@ -61,7 +67,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
     def __repr__(self):
         msg = ('{}@{}(parent={!r}@{}, headers={}, _butColumn={!r}, '.format(
             self.__class__.__name__, hex(id(self)),
-            self.parent.__class__.__name__, hex(id(self.parent)),
+            self._parent.__class__.__name__, hex(id(self._parent)),
             self._headers, self._butColumn) +
             '_dirColumn={}, _directoryData={})'.format(
                 self._dirColumn, self._directoryData)
@@ -121,7 +127,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             else:
                 # For other cells display the content of the cell
                 data = self._directoryData[row][column]
-                data = self.stringConverter(data)
+                data = self._stringConverter(data)
                 return data
 
         #if role == QtCore.Qt.DecorationRole:
@@ -135,7 +141,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             if column != self._butColumn:
                 value = self._directoryData[row][column]
                 # If the data is a list then we convert it into a string
-                value = self.stringConverter(value)
+                value = self._stringConverter(value)
                 return value
 
     '''
@@ -169,7 +175,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             self.beginInsertRows(parent, row + 1, (row + 1) + (count - 1))
             for i in range(count):
                 # Get an empty with correct length
-                newRow = self.getEmptyRow()
+                newRow = self._getEmptyRow()
                 # Insert it in the directory data structure
                 self._directoryData.insert(row + 1 + i, newRow)
             # Mandatory call of endInsertRows
@@ -250,7 +256,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         else:
             return False
 
-    def getEmptyRow(self):
+    def _getEmptyRow(self):
         """
         Generate an empty with the correct number of columns
 
@@ -289,7 +295,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
         """
         # Use the QFileDialog to get the new directory from the user
         newDir = QtWidgets.QFileDialog.getExistingDirectory(
-            self.parent, 'Root directory', '/',
+            self._parent, 'Root directory', '/',
             QtWidgets.QFileDialog.ShowDirsOnly |
             QtWidgets.QFileDialog.DontResolveSymlinks)
         #newDir = "test"
@@ -313,12 +319,12 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             self.dataChanged.emit(startIndex, startIndex)
 
             # Emit newButtonCreated with indexes of the changed area
-            self.newButtonCreated.emit(startIndex, startIndex)
+            self.signals.newButtonCreated.emit(startIndex, startIndex)
 
             logging.info("New directory added: {}".format(newDir))
 
             # Emit DirectoryAdded with the name of the directory
-            self.directoryAdded.emit(newDir)
+            self.signals.directoryAdded.emit(newDir)
             return True
 
         return False
@@ -359,7 +365,7 @@ class DirectoryManagerTableModel(QtCore.QAbstractTableModel):
             raise RuntimeError("Can't find column header: '{}''".format(name))
             return -1
 
-    def stringConverter(self, data):
+    def _stringConverter(self, data):
         """
         Convert the data into a string if necessary.
 

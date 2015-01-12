@@ -7,17 +7,13 @@ The Transcoder extension of the Diretory Manager Widget
 """
 
 # Import PyQt
-from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 
 # Import custom PyQt modules
 from NzPyQtToolBox.DirMgr.Widget import DirectoryManagerWidget
-from NzPyQtToolBox.DirMgr.TModel import DirectoryManagerTableModel
 from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
 
 from DirMgr.TModel import TranscoderDirMgrTableModel
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
 # Import custom modules
 import LoggingTools
@@ -25,7 +21,6 @@ import LoggingTools
 # Import standard modules
 import sys
 import logging
-from pprint import pprint
 
 
 class TranscoderDirMgrWidget(DirectoryManagerWidget):
@@ -36,9 +31,9 @@ class TranscoderDirMgrWidget(DirectoryManagerWidget):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.parent = parent
+        self._parent = parent
 
-    def directoryAddedProcessing(self, dirpath):
+    def _processNewDirectory(self, dirpath):
         """
         Define the processing of each new directory added
 
@@ -46,7 +41,7 @@ class TranscoderDirMgrWidget(DirectoryManagerWidget):
 
         @todo Improve this ugly inteface...
         """
-        self.parent.processDirectory(dirpath)
+        self._parent.processDirectory(dirpath)
 
     def getFiles(self):
         """
@@ -66,7 +61,7 @@ if __name__ == '__main__':
     additionnalHeaders = ["Status", "Extensions", "File count", "Files",
                           "Error"]
     model = TranscoderDirMgrTableModel(
-        dirWidget.getTableView(), additionnalHeaders)
+        dirWidget.tableView, additionnalHeaders)
     dirWidget.setModelToView(model)
 
     # Create and set delegate to the widget

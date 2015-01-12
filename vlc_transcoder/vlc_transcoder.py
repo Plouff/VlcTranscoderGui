@@ -44,6 +44,7 @@ if __name__ == '__main__':
 
     # Plug easter egg
     easterEgg = EasterEgg(app, "demo", settings.toggleDemo)
+    logging.debug(str(easterEgg))
 
     # Create the main view
     view = MainView()

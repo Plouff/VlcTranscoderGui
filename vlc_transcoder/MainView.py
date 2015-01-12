@@ -43,12 +43,12 @@ class MainView(QtWidgets.QWidget):
         # Set GUI title
         self.setWindowTitle("VLC Transcoder")
         # Init tabs
-        self.tabWidget = self.initTabs()
+        self._tabWidget = self.initTabs()
 
         # Create layout and add the tabs
         mainLayout = QtWidgets.QVBoxLayout()
 
-        mainLayout.addWidget(self.tabWidget)
+        mainLayout.addWidget(self._tabWidget)
 
         # Set an Icon
         self.setWindowIcon(QtGui.QIcon('icon.png'))

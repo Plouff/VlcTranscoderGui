@@ -12,12 +12,11 @@ from PyQt5 import QtCore
 # Import custom modules
 from NzPyQtToolBox.NzToolTipList import \
     TooltipedDataListModel as TooltipListModel
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
 # Import standard modules
 
 
-class ConfTabCtrl():
+class ConfTabCtrl(QtCore.QObject):
     """
     The controller for the configuration tab widgets
     """
@@ -62,6 +61,7 @@ class ConfTabCtrl():
             self.view.aBitRateCombo.findText("128kB/s"))
 
         # Sample rate
+        # TODO: add sample rate
 #         self.aSampleRateModel = QtCore.QStringListModel(
 #             self.model.aSampleRateList)
 #         self.view.aSampleRateCombo.setModel(self.aSampleRateModel)

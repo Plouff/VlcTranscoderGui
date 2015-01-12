@@ -1,5 +1,5 @@
 #! python3
-#-*-coding: utf-8 -*-
+# -*-coding: utf-8 -*-
 
 """
 @file TDelegate.py
@@ -9,14 +9,11 @@ The table delegate for the Directory Manager Widget
 # Import PyQt modules
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 
 # Import custom modules
 
 # Import standard modules
-import sys
 import logging
-from pprint import pprint
 
 
 class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
@@ -31,28 +28,28 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         @param[in] parent The parent widget containing this table delegate
         """
         # Store parent
-        self.parent = parent
+        self._parent = parent
 
         # Get model and table view from parent
-        self.model = parent.getModel()
-        self.parentTable = parent.getTableView()
+        self._model = parent.getModel()
+        self._parentTable = parent.tableView
 
         # Initialize the list of button objects
         self._plusMinusButList = []
 
         # Call parent constructor
-        super(DirectoryManagerTableDelegate, self).__init__(self.parentTable)
+        super(DirectoryManagerTableDelegate, self).__init__(self._parentTable)
 
         # Create a signal mapper for "+/-" buttons
-        self._butClickedMapper = QtCore.QSignalMapper(self.parentTable)
+        self._butClickedMapper = QtCore.QSignalMapper(self._parentTable)
         self._butClickedMapper.mapped[QtWidgets.QWidget].connect(
-            self.model.addRemoveDirectory)
+            self._model.addRemoveDirectory)
 
     def __repr__(self):
         msg = ("{}@{}(parent={}@{}, model={!r}, _plusMinusButList={})".format(
             self.__class__.__name__, hex(id(self)),
-            self.parent.__class__.__name__, hex(id(self.parent)),
-            self.model, self._plusMinusButList))
+            self._parent.__class__.__name__, hex(id(self._parent)),
+            self._model, self._plusMinusButList))
         return msg
 
     #
@@ -139,12 +136,6 @@ class DirectoryManagerTableDelegate(QtWidgets.QStyledItemDelegate):
         @param[in] button The +/- button that index is needed
         """
         return self._plusMinusButList.index(button)
-
-    def getButtonClickedMapper(self):
-        """
-        Getter for the button clicked signal mapper
-        """
-        return self._butClickedMapper
 
     def removeButton(self, index):
         """

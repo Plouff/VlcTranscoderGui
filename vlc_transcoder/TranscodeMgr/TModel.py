@@ -97,14 +97,14 @@ class TModel(QtCore.QAbstractTableModel):
             self.beginInsertRows(parent, row + 1, (row + 1) + (count - 1))
             for i in range(count):
                 # Get an empty with correct length
-                newRow = self.getEmptyRow()
+                newRow = self._getEmptyRow()
                 # Insert it in the directory data structure
                 self.filesdata.insert(row + 1 + i, newRow.copy())
             # Mandatory call of endInsertRows
             self.endInsertRows()
             return True
 
-    def getEmptyRow(self):
+    def _getEmptyRow(self):
         """
         Generate an empty with the correct number of columns
 

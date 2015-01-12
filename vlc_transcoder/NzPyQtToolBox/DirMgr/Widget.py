@@ -1,5 +1,5 @@
 #! python3
-#-*-coding: utf-8 -*-
+# -*-coding: utf-8 -*-
 
 """
 @file Widget.py
@@ -7,14 +7,11 @@ The Directory Manager Widget
 """
 
 # Import PyQt
-from PyQt5 import QtCore
 from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 
 # Import custom PyQt modules
 from NzPyQtToolBox.DirMgr.TModel import DirectoryManagerTableModel
 from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
-from DebugTrace import qtDebugTrace
 
 
 # Import custom modules
@@ -23,7 +20,6 @@ from DebugTrace import qtDebugTrace
 import sys
 import logging
 import LoggingTools
-from pprint import pprint
 
 
 class DirectoryManagerWidget(QtWidgets.QWidget):
@@ -35,19 +31,19 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
         super().__init__(parent)
 
         # Create the table view
-        self._tableView = QtWidgets.QTableView()
+        self.tableView = QtWidgets.QTableView()
 
         # The layout
         _layout = QtWidgets.QVBoxLayout(self)
-        _layout.addWidget(self._tableView)
+        _layout.addWidget(self.tableView)
 
         self.ctrlButCol = 0
 
     def __repr__(self):
         model = self.getModel()
         delegate = self.getDelegate()
-        tableview = self.getTableView()
-        msg = ("{}@{}(_tableView={!r}@{}, model={!r}, _delegate={!r}".format(
+        tableview = self.tableView
+        msg = ("{}@{}(tableView={!r}@{}, model={!r}, _delegate={!r}".format(
             self.__class__.__name__, hex(id(self)),
             tableview.__class__.__name__, hex(id(tableview)), model, delegate)
         )
@@ -67,16 +63,16 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
                                 "{}".format(model.__class__.__name__)))
         self.model = model
         # Qt setModel
-        self._tableView.setModel(self.model)
+        self.tableView.setModel(self.model)
 
         # Connect newButtonCreated to a method that will create the button on
         # the next row
-        self.model.newButtonCreated.connect(
-            self.createPersistentEditorOnNextRow)
+        self.model.signals.newButtonCreated.connect(
+            self._createPersistentEditorOnNextRow)
 
         # Connect directoryAdded to the method that will process the new
         # directory
-        self.model.directoryAdded.connect(self.directoryAddedProcessing)
+        self.model.signals.directoryAdded.connect(self._processNewDirectory)
 
     def getModel(self):
         """
@@ -88,14 +84,6 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
             raise RuntimeError(("No model set to the widget. You must use "
                                 "method setModelToView to set it up"))
         return self.model
-
-    def getTableView(self):
-        """
-        Getter for the table view
-
-        @return The table view in use
-        """
-        return self._tableView
 
     def getDelegate(self):
         """
@@ -119,19 +107,19 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
                                 "from DirectoryManagerTableDelegate"))
         self._delegate = delegate
         # Qt setItemDelegate
-        self._tableView.setItemDelegate(delegate)
+        self.tableView.setItemDelegate(delegate)
         # Custom setItemDelegate
         self.model.setDelegate(delegate)
 
         # Create +/- intial buttons
         for row in range(self.model.rowCount(self)):
-            self._tableView.openPersistentEditor(
+            self.tableView.openPersistentEditor(
                 self.model.index(row, self.ctrlButCol))
 
         # Resize first column to fit the size of the buttons
-        self._tableView.resizeColumnToContents(self.ctrlButCol)
+        self.tableView.resizeColumnToContents(self.ctrlButCol)
 
-    def createPersistentEditorOnNextRow(self, startIndex):
+    def _createPersistentEditorOnNextRow(self, startIndex):
         """
         Create a +/- button when a new row is added.
 
@@ -151,12 +139,12 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
 
         elif self.model.isLastRow(startRow + 1):
             # if the signal was emitted from the last row => create new button
-            self._tableView.openPersistentEditor(
+            self.tableView.openPersistentEditor(
                 self.model.index(startRow + 1, self.ctrlButCol))
             logging.debug("Persisent editor created on row {}".format(
                 startRow + 1))
 
-    def directoryAddedProcessing(self, dir):
+    def _processNewDirectory(self, dirpath):
         """
         An abstract method (even if we don't use ABC module).
         This method needs to be implement in derived classes to process the
@@ -164,7 +152,7 @@ class DirectoryManagerWidget(QtWidgets.QWidget):
         """
         currentFuncName = sys._getframe().f_code.co_name
         raise NotImplementedError(
-            "method {} must be implemented in derived class".format(
+            "method {} must be implemented in subclasses".format(
                 currentFuncName))
 
 if __name__ == '__main__':

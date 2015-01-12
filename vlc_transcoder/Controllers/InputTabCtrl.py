@@ -10,16 +10,13 @@ The Controller for the input files tab
 from PyQt5 import QtCore
 
 # Import custom modules
-from NzPyQtToolBox.NzToolTipList import \
-    TooltipedDataListModel as TooltipListModel
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
 from DirMgr.TModel import TranscoderDirMgrTableModel
 from NzPyQtToolBox.DirMgr.TDelegate import DirectoryManagerTableDelegate
 
 # Import standard modules
 
 
-class InputTabCtrl():
+class InputTabCtrl(QtCore.QObject):
     """
     The controller for the input tab widgets
     """
@@ -52,7 +49,7 @@ class InputTabCtrl():
         additionnalHeaders = ["Status", "Extensions", "File count", "Files",
                               "Error"]
         self.model.dirMgrModel = TranscoderDirMgrTableModel(
-            dirMgr.getTableView(), additionnalHeaders)
+            dirMgr.tableView, additionnalHeaders)
         dirMgr.setModelToView(self.model.dirMgrModel)
 
         # Create and set delegate to the widget

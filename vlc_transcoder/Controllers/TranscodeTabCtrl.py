@@ -12,7 +12,7 @@ from PyQt5 import QtCore
 # Import standard modules
 
 
-class TranscodeTabCtrl():
+class TranscodeTabCtrl(QtCore.QObject):
     """
     The controller for the transcode tab
     """
@@ -23,6 +23,8 @@ class TranscodeTabCtrl():
         @param model the model of the MVC GUI
         @param view the view of the MVC GUI
         """
+        # TODO: put transcoding stuff from the main controller here
+
         # Save pointers to model and view
         self.model = model
         self.view = view

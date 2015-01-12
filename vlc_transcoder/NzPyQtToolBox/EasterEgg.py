@@ -37,6 +37,7 @@ class EasterEgg(QtCore.QObject):
         @param slot: The slot to connect
         """
         super().__init__()
+
         # Setup the event filter so that the EasterEgg class will get all
         # events before the app
         app.installEventFilter(self)
@@ -44,10 +45,18 @@ class EasterEgg(QtCore.QObject):
         # Connect the slot to be executed
         self._signal = EasterEggSignal()
         self._signal.found.connect(slot)
+        # Only to __repr__ it
+        self._slot = slot
 
         # Save the password that will trigger the easter egg
         self._password = password
         self._index = 0
+
+    def __repr__(self):
+        msg = ("{}@{}(password={!r}, slot={}, _index={})".format(
+            self.__class__.__name__, hex(id(self)), self._password,
+            str(self._slot), self._index))
+        return msg
 
     def eventFilter(self, obj, event):
         """

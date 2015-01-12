@@ -1,5 +1,5 @@
 #! python3
-#-*-coding: utf-8 -*-
+# -*-coding: utf-8 -*-
 
 """
 @file InputFilesTab.py
@@ -7,16 +7,13 @@ The Input files Tab of the GUI
 """
 
 # Import PyQt modules
-from PyQt5 import QtGui
 from PyQt5 import QtWidgets
-from PyQt5 import QtCore
 
 # Import custom modules
 from NzPyQtToolBox.NzQAutoGridWidgets import NzQAutoGridCheckboxes
 from DirMgr.Widget import TranscoderDirMgrWidget
 
 # Import standard modules
-import pprint
 
 
 class InputFilesTab(QtWidgets.QWidget):
@@ -30,7 +27,7 @@ class InputFilesTab(QtWidgets.QWidget):
         @param parent The parent widget
         """
         super().__init__(parent)
-        self.parent = parent
+        self._parent = parent
 
         # Create the directory manager widget
         self.dirmgr = TranscoderDirMgrWidget(self)
@@ -72,4 +69,4 @@ class InputFilesTab(QtWidgets.QWidget):
 
         @todo Improve this ugly inteface...
         """
-        self.parent.controller.processDirectory(dirpath)
+        self._parent.controller.processDirectory(dirpath)

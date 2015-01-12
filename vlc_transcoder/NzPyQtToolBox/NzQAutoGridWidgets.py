@@ -7,16 +7,13 @@ A widget to generate a grid of widgets
 """
 
 # Import PyQt modules
-from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 
 # Import custom modules
 from NzToolBox import LoggingTools
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
 # Import standard modules
-from pprint import pprint
 import logging
 import warnings
 

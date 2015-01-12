@@ -6,7 +6,6 @@ Find files recrusively from a given root dir
 """
 
 # Import custom modules
-from NzPyQtToolBox.DebugTrace import qtDebugTrace
 
 # Import standard modules
 import os
@@ -102,10 +101,9 @@ def findFilesbyExtension(rootDir, rawExtensions):
 
 if __name__ == '__main__':
     # A basic exemple
-    try:
-        sys.argv[1] != ''
+    if len(sys.argv) > 1:
         for filename in findFiles(sys.argv[1], ['*.py']):
             print('Found Python source:', filename)
-    except:
+    else:
         for filename in findFiles('.', ['*.py']):
             print('Found Python source:', filename)

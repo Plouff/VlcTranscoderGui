@@ -2,7 +2,7 @@
 # -*-coding: utf-8 -*-
 
 """
-@file TranscoderRunnable.py
+@_file TranscoderRunnable.py
 The worker for transcoding
 """
 
@@ -40,18 +40,17 @@ class Transcoder(QtCore.QRunnable):
         The class constructor
         """
         super().__init__()
-        self.file = file
-        self.model = model
-        self.config = config
-        self.signal = TranscoderSignals()
+        self._file = file
+        self._config = config
+        self.signals = TranscoderSignals()
 
         # Connect signals
-        self.signal.updateStatus.connect(self.model.setStatus)
-        self.signal.updateError.connect(self.model.setError)
+        self.signals.updateStatus.connect(model.setStatus)
+        self.signals.updateError.connect(model.setError)
 
     def __repr__(self):
-        msg = "{}@{}(file={}, config={}".format(
-            self.__class__.__name__, hex(id(self)), self.file, self.config)
+        msg = "{}@{}(_file={}, _config={}".format(
+            self.__class__.__name__, hex(id(self)), self._file, self._config)
         return msg
 
     def run(self):
@@ -59,10 +58,10 @@ class Transcoder(QtCore.QRunnable):
         Specific implementation of the process function
         """
         logging.info(
-            'Starting trancoding of file "{}"'.format(self.file))
+            'Starting trancoding of _file "{}"'.format(self._file))
 
         # Set status "Transcoding"
-        self.signal.updateStatus.emit(self.file, "Transcoding")
+        self.signals.updateStatus.emit(self._file, "Transcoding")
 
         try:
             if settings.GlobalVars.demoMode:
@@ -72,14 +71,14 @@ class Transcoder(QtCore.QRunnable):
 
         except Exception as e:
             # Set status "Error"
-            self.signal.updateStatus.emit(self.file, "Error")
-            self.signal.updateError.emit(self.file, str(e))
+            self.signals.updateStatus.emit(self._file, "Error")
+            self.signals.updateError.emit(self._file, str(e))
             raise e
 
         # Set status "Scanned"
-        self.signal.updateStatus.emit(self.file, "Transcoded")
+        self.signals.updateStatus.emit(self._file, "Transcoded")
 
-        logging.info('End of transcoding of "{}"'.format(self.file))
+        logging.info('End of transcoding of "{}"'.format(self._file))
 
     def getVlcErrorMsg(self, e):
         """
@@ -110,10 +109,10 @@ class Transcoder(QtCore.QRunnable):
         return vlcerror
 
     def launchTranscoder(self):
-        cfg = self.config
+        cfg = self._config
         vlcpath = r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe"
 
-        # Create temporary file path
+        # Create temporary _file path
         tmpoutfile = tempfile.NamedTemporaryFile()
         tmpoutfilename = tmpoutfile.name
         tmpoutfile.close()
@@ -131,16 +130,16 @@ class Transcoder(QtCore.QRunnable):
             args = args + r',deinterlace} vlc://quit'
         else:
             args = args + r"} vlc://quit"
-            # args = args + r'}'
+#             args = args + r'}'
 
         # Debug print
         logging.debug("vlc " + args)
 
         argslist = args.split(' ')
 
-        # Since the file may contain space characters we need to add it after
+        # Since the _file may contain space characters we need to add it after
         # the split of the command line
-        argslist[argslist.index('FILE')] = self.file
+        argslist[argslist.index('FILE')] = self._file
 
         # Create final command
         cmd = [vlcpath] + argslist
@@ -148,12 +147,12 @@ class Transcoder(QtCore.QRunnable):
         try:
             logging.info(cmd)
             subprocess.check_call(cmd)
-            outputfile = self.createOutputFilename(self.file)
+            outputfile = self.createOutputFilename(self._file)
 
         except CalledProcessError as e:
             vlcerror = self.getVlcErrorMsg(e)
 
-            msg = "Failed to transcode file: '{}'. ".format(self.file)
+            msg = "Failed to transcode _file: '{}'. ".format(self._file)
             msg = msg + "VLC returned error: {}".format(vlcerror)
             raise RuntimeError(msg)
             raise e
@@ -165,13 +164,14 @@ class Transcoder(QtCore.QRunnable):
 
         # vlcpath -I dummy -vvv "%%i" --sout=#transcode{vcodec=%vcodec%,
         # vb=%vb%,height=%height%,acodec=%acodec%,ab=%ab%,channels=2,
-        # samplerate=%samplerate%}:std{access=file,mux=%mux%,dst=!temp_out!}
+        # samplerate=%samplerate%}:std{access=_file,mux=%mux%,dst=!temp_out!}
         # vlc://quit
 
     def demo(self):
             import random
             import time
             print("transcoding...")
+            self.signals.updateError.emit(self._file, "")
 
             rand = random.Random()
             num = rand.randint(0, 4)
@@ -184,15 +184,15 @@ class Transcoder(QtCore.QRunnable):
 
     def createOutputFilename(self, file, suffix='_transcoded'):
         """
-        Create a file name with a give suffix
+        Create a _file name with a give suffix
 
-        @param file: The file to suffix
+        @param _file: The _file to suffix
         @param suffix: The suffix to apply (default: '_transcoded'
 
-        @return: A file path with the given suffix
+        @return: A _file path with the given suffix
         """
         split = os.path.splitext(file)
-        return split[0] + suffix + '.' + self.config.encaps
+        return split[0] + suffix + '.' + self._config.encaps
 
 if __name__ == '__main__':
     pass

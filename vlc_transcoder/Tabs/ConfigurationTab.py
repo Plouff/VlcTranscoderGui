@@ -11,7 +11,8 @@ from PyQt5 import QtWidgets
 from PyQt5 import Qt
 
 # Import custom modules
-from NzPyQtToolBox import NzQWidgets
+from NzPyQtToolBox.NzQDisablingWidgets import NzQDisablingCheckBox
+from NzPyQtToolBox.NzQDisablingWidgets import NzQDisablingRadioButton 
 from Controllers.TranscodingConfig import TranscodingConfig
 
 # Import standard modules
@@ -88,7 +89,7 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         # Bit rate
         vBitRateLabel = QtWidgets.QLabel("Bit rate:")
-        self.autoBitRateDisCkBox = NzQWidgets.NzQDisablingCheckBox(
+        self.autoBitRateDisCkBox = NzQDisablingCheckBox(
             text='Auto', parent=self)
         self.autoBitRateDisCkBox.setChecked(True)
 
@@ -153,12 +154,12 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         @return cRow int: The final row index after the widgets were created
         """
-        self.resizeDisCheckB = NzQWidgets.NzQDisablingCheckBox(
+        self.resizeDisCheckB = NzQDisablingCheckBox(
             text="Resize", parent=self)
         grid.addWidget(self.resizeDisCheckB, cRow, 0)
 
         # Resize by standard resolution
-        byStdResolDisRadio = NzQWidgets.NzQDisablingRadioButton(
+        byStdResolDisRadio = NzQDisablingRadioButton(
             text="Std Resolution", parent=self, isInMutexGroup=True)
         self.byStdResolCombo = QtWidgets.QComboBox(self)
         byStdResolDisRadio.setChecked(True)
@@ -168,11 +169,11 @@ class ConfigurationTab(QtWidgets.QWidget):
 
         cRow += 1
         # Resize by Height
-        byHeightDisRadio = NzQWidgets.NzQDisablingRadioButton(
+        byHeightDisRadio = NzQDisablingRadioButton(
             text="Height", parent=self, isInMutexGroup=True)
         self.byHeightCombo = QtWidgets.QComboBox(self)
 
-        customHeightDisCheckB = NzQWidgets.NzQDisablingCheckBox(
+        customHeightDisCheckB = NzQDisablingCheckBox(
             text="Custom", parent=self)
         self.customHeightLineEd = QtWidgets.QLineEdit(self)
         self.customHeightLineEd.setText("0")
@@ -185,15 +186,15 @@ class ConfigurationTab(QtWidgets.QWidget):
         grid.addWidget(byHeightDisRadio, cRow, 1)
         grid.addWidget(self.byHeightCombo, cRow, 2)
         grid.addWidget(customHeightDisCheckB, cRow, 3)
-        grid.addWidget(self.customHeightLineEd, cRow, 4)
+        grid.addWidget(self.customHeightLineEd, cRow, 4, 1, 2)
 
         cRow += 1
         # Resize by Width
-        byWidthDisRadio = NzQWidgets.NzQDisablingRadioButton(
+        byWidthDisRadio = NzQDisablingRadioButton(
             text="Width", parent=self, isInMutexGroup=True)
         self.byWidthCombo = QtWidgets.QComboBox(self)
 
-        customWidthDisCheckB = NzQWidgets.NzQDisablingCheckBox(
+        customWidthDisCheckB = NzQDisablingCheckBox(
             text="Custom", parent=self)
         self.customWidthLineEd = QtWidgets.QLineEdit(self)
         self.customWidthLineEd.setText("0")
@@ -206,11 +207,11 @@ class ConfigurationTab(QtWidgets.QWidget):
         grid.addWidget(byWidthDisRadio, cRow, 1)
         grid.addWidget(self.byWidthCombo, cRow, 2)
         grid.addWidget(customWidthDisCheckB, cRow, 3)
-        grid.addWidget(self.customWidthLineEd, cRow, 4)
+        grid.addWidget(self.customWidthLineEd, cRow, 4, 1, 2)
 
         cRow += 1
         # Resize by Percent
-        byPercentDisRadio = NzQWidgets.NzQDisablingRadioButton(
+        byPercentDisRadio = NzQDisablingRadioButton(
             text="Percent", parent=self, isInMutexGroup=True)
 
         self.byPercentSpin = QtWidgets.QSpinBox(self)

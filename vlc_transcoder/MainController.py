@@ -31,23 +31,23 @@ class MainController():
         @param view the view of the MVC GUI
         """
         # Save pointers to model and view
-        self.model = model
-        self.view = view
+        self._model = model
+        self._view = view
 
         # Register the controller in the model and the view
-        self.model.controller = self
-        self.view.controller = self
+        self._model.controller = self
+        self._view.controller = self
 
         # Create dedicated controllers
-        self.confTabCtrl = ConfTabCtrl(model, view.confTab)
-        self.inputTabCtrl = InputTabCtrl(model, view.inputTab)
-        self.transcodeTabCtrl = TranscodeTabCtrl(model, view.transcodeTab)
-        self.pool = QtCore.QThreadPool()
-        self.pool.setMaxThreadCount(3)
+        self._confTabCtrl = ConfTabCtrl(model, view.confTab)
+        self._inputTabCtrl = InputTabCtrl(model, view.inputTab)
+        self._transcodeTabCtrl = TranscodeTabCtrl(model, view.transcodeTab)
+        self._pool = QtCore.QThreadPool()
+        self._pool.setMaxThreadCount(3)
 
         # Connect signals
-        self.view.updateFiles.connect(self.updateFiles2Transcode)
-        self.view.launchTranscoding.connect(self.launchTranscoding)
+        self._view.updateFiles.connect(self.updateFiles2Transcode)
+        self._view.launchTranscoding.connect(self.launchTranscoding)
 
     def initGUI(self):
         """
@@ -56,20 +56,20 @@ class MainController():
         # Connect models to views
         self.connectModelAndView()
         # Show GUI
-        self.view.show()
+        self._view.show()
 
     def addRootDirectory(self, rootDir):
         """
         Append a root directory to the list of root directories in the Model
         """
-        self.model.addRootDirectory(rootDir)
+        self._model.addRootDirectory(rootDir)
 
     def connectModelAndView(self):
         """
         Create models and connect them to the different views
         """
-        self.confTabCtrl.connectModelAndView()
-        self.inputTabCtrl.connectModelAndView()
+        self._confTabCtrl.connectModelAndView()
+        self._inputTabCtrl.connectModelAndView()
 
     def processDirectory(self, dirpath):
         """
@@ -78,16 +78,16 @@ class MainController():
         @param[in] dirpath The directory just added by the user
         """
         # Get the list of extensions
-        extSelected = self.view.getSelectedExtensions()
+        extSelected = self._view.getSelectedExtensions()
 
         # Create a directory worker
-        dirrunnable = DirRunnable(dirpath, extSelected, self.model.dirMgrModel)
+        dirrunnable = DirRunnable(dirpath, extSelected, self._model.dirMgrModel)
 
         # Set waiting status
-        self.model.dirMgrModel.setStatus(dirpath, "Waiting")
+        self._model.dirMgrModel.setStatus(dirpath, "Waiting")
 
         # Send worker to thread pool
-        self.pool.start(dirrunnable)
+        self._pool.start(dirrunnable)
 
     def raiseThreadError(self, msg):
         raise RuntimeError("Thread Error: {}".format(msg))
@@ -98,7 +98,7 @@ class MainController():
 
         @param transcModel: The model of the transcoding table view
         """
-        files = self.inputTabCtrl.getFilesFromInputTab()
+        files = self._inputTabCtrl.getFilesFromInputTab()
         transcModel.setFiles(files)
 
     def launchTranscoding(self, model):
@@ -108,7 +108,7 @@ class MainController():
         @param model: The model of the transcoding table view
         """
         # Get config
-        config = self.view.getConfig()
+        config = self._view.getConfig()
 
         # Create a transcoder worker
         for row in model.filesdata:
@@ -116,4 +116,4 @@ class MainController():
             file = row[col]
             transcoder = Transcoder(file, model, config)
             # Send worker to thread pool
-            self.pool.start(transcoder)
+            self._pool.start(transcoder)

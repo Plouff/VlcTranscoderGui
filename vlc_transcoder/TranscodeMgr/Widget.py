@@ -3,7 +3,7 @@
 
 """
 @file TModel.py
-The model for the transcoding status table
+The model for the transcoding status _tableView
 """
 # Import PyQt modules
 from PyQt5 import QtWidgets
@@ -29,9 +29,9 @@ class TranscoderMgrWidget(QtWidgets.QWidget):
         super().__init__(parent)
         # Create model
         self.model = TModel()
-        # Create table view
-        self.table = QtWidgets.QTableView(self)
-        self.table.setModel(self.model)
+        # Create _tableView view
+        self._tableView = QtWidgets.QTableView(self)
+        self._tableView.setModel(self.model)
         # Create progress bar
         self.progBar = QtWidgets.QProgressBar(self)
         self.progBar.setMinimum(0)
@@ -40,7 +40,7 @@ class TranscoderMgrWidget(QtWidgets.QWidget):
 
         # Define layout
         grid = QtWidgets.QGridLayout()
-        grid.addWidget(self.table, 0, 0)
+        grid.addWidget(self._tableView, 0, 0)
         grid.addWidget(self.progBar, 1, 0)
         self.setLayout(grid)
         self.setContentsMargins(0, 0, 0, 0)
@@ -80,10 +80,10 @@ if __name__ == '__main__':
     # Create random number generator
     randGen = Random()
 
-    # Set number of row in the table
+    # Set number of row in the _tableView
     rows = 120
 
-    # Fill table with random numbers
+    # Fill _tableView with random numbers
     for i in range(rows):
         num = randGen.randint(0, 999999999)
         transcWidget.appendFile(num)
