@@ -134,7 +134,7 @@ class Transcoder(QtCore.QRunnable):
             # args = args + r'}'
 
         # Debug print
-        logging.info("vlc " + args)
+        logging.debug("vlc " + args)
 
         argslist = args.split(' ')
 
@@ -192,7 +192,7 @@ class Transcoder(QtCore.QRunnable):
         @return: A file path with the given suffix
         """
         split = os.path.splitext(file)
-        return split[0] + suffix + split[1]
+        return split[0] + suffix + '.' + self.config.encaps
 
 if __name__ == '__main__':
     pass
