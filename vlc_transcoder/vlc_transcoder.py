@@ -11,6 +11,13 @@ author: Nassim Zga
 created: 20/10/14
 """
 
+# Deal with PYTHONPATH
+import sys
+import os
+rootdir = os.path.dirname(__file__)
+sys.path.append(os.path.join(rootdir, 'NzPyQtToolBox'))
+sys.path.append(os.path.join(rootdir, 'NzToolBox'))
+
 # Import PyQt modules
 from PyQt5 import QtWidgets
 
@@ -19,8 +26,8 @@ from MainView import MainView
 from MainModel import MainModel
 from MainController import MainController
 from NzToolBox import LoggingTools
-import settings
 from NzPyQtToolBox.EasterEgg import EasterEgg
+import settings
 
 # Import standard modules
 import logging
@@ -30,8 +37,6 @@ import logging
 Script wrapper
 """
 if __name__ == '__main__':
-    import sys
-
     # Configure logger
 #     LoggingTools.initLogger(logging.DEBUG)
     LoggingTools.initLogger(logging.INFO)

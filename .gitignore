@@ -8,7 +8,11 @@ __pycache__/
 # Rope folders
 .ropeproject/
 
+# Eclipse
+org.eclipse.core.resources.prefs
+.pydevproject*
+/.settings
+/.project*
+
 # Other
 General_snippets/
-org.eclipse.core.resources.prefs
-.pydevproject

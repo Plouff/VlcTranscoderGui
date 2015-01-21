@@ -152,12 +152,12 @@ class Transcoder(QtCore.QRunnable):
         except CalledProcessError as e:
             vlcerror = self.getVlcErrorMsg(e)
 
-            msg = "Failed to transcode _file: '{}'. ".format(self._file)
+            msg = "Failed to transcode file: '{}'. ".format(self._file)
             msg = msg + "VLC returned error: {}".format(vlcerror)
             raise RuntimeError(msg)
             raise e
         except FileNotFoundError as e:
-            raise RuntimeError("Couldn't find command '{}'".format(cmd[0]))
+            raise RuntimeError("Couldn't find VLC at '{}'".format(cmd[0]))
             raise e
 
         shutil.move(tmpoutfilename, outputfile)
